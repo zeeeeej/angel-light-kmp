@@ -10,11 +10,12 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.yunext.angel.light.resources.Res
+import com.yunext.angel.light.resources.compose_multiplatform
+import com.yunext.angel.light.resources.logo
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
-import angellightkmp.composeapp.generated.resources.Res
-import angellightkmp.composeapp.generated.resources.compose_multiplatform
 
 @Composable
 @Preview
@@ -25,13 +26,20 @@ fun App() {
             Button(onClick = { showContent = !showContent }) {
                 Text("Click me!")
             }
+
+            Image(painterResource(Res.drawable.logo), null)
             AnimatedVisibility(showContent) {
                 val greeting = remember { Greeting().greet() }
-                Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+                Column(
+                    Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
                     Image(painterResource(Res.drawable.compose_multiplatform), null)
                     Text("Compose: $greeting")
                 }
             }
+
+
         }
     }
 }
