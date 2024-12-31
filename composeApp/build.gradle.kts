@@ -1,4 +1,3 @@
-import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
@@ -7,6 +6,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.kotlinx.serialization)
 }
 
 kotlin {
@@ -33,6 +33,12 @@ kotlin {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
+
+            // Koin
+            implementation(libs.koin.android)
+            implementation(libs.koin.androidx.compose)
+
+            implementation(libs.splashscreen)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -42,7 +48,19 @@ kotlin {
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodel)
-            implementation(libs.androidx.lifecycle.runtime.compose)
+//            implementation(libs.androidx.lifecycle.runtime.compose)
+            implementation(libs.bundles.androidx.lifecycle)
+
+            implementation(libs.bundles.navigation)
+            implementation(libs.bundles.kotlinxExt)
+            implementation(libs.bundles.androidx.datastore)
+            implementation(libs.okio)
+            // Koin
+            api(libs.koin.core)
+            implementation(libs.koin.compose)
+
+            implementation(libs.bundles.yunext)
+//            implementation(libs.bundles.zeeeeej)
         }
     }
 }

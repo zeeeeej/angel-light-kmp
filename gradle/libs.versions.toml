@@ -1,28 +1,46 @@
 [versions]
-agp = "8.5.2"
+agp = "8.2.2"
+kotlin = "2.0.20"
+kotlinx-datetime = "0.6.1"
 android-compileSdk = "34"
-android-minSdk = "24"
+android-minSdk = "28"
 android-targetSdk = "34"
-androidx-activityCompose = "1.9.3"
+androidx-lifecycle = "2.8.4"
+androidx-activityCompose = "1.9.0"
 androidx-appcompat = "1.7.0"
 androidx-constraintlayout = "2.2.0"
 androidx-core-ktx = "1.15.0"
-androidx-espresso-core = "3.6.1"
-androidx-lifecycle = "2.8.4"
+androidx-espresso-core = "3.5.1"
 androidx-material = "1.12.0"
 androidx-test-junit = "1.2.1"
-compose-multiplatform = "1.7.0"
+compose-multiplatform = "1.6.10"
 junit = "4.13.2"
-kotlin = "2.1.0"
-# other
-kotlinx-serialization = "1.6.3"
-kotlinx-datetime = "0.6.0"
-coil = "2.3.0"
-zeeeeej = "1.0.2"
-ktor = "2.3.8"
+ktor = "2.3.11"
+navigation = "2.8.0-alpha08"
 
+kotlinx-coroutines = "1.8.0"
+kotlinx-serialization = "1.7.0"
+
+yunext = "0.0.9"
+zhongguose = "0.0.1"
+zeeeeej = "1.0.2"
+
+# other
+
+coil = "2.3.0"
+dataStoreVersion = "1.1.1"
+okio = "3.9.0"
+
+# Koin
+koin = "3.6.0-alpha3"
+koinCompose = "3.6.0-alpha3"
+koinComposeMultiplatform = "1.2.0-alpha3"
+
+#Android
+splashscreen ="1.0.1"
 
 [libraries]
+splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "splashscreen" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -35,6 +53,18 @@ androidx-constraintlayout = { group = "androidx.constraintlayout", name = "const
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
 androidx-lifecycle-viewmodel = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-viewmodel", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-runtime-compose = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-viewmodel-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }
+# Androidx Lifecycle
+#androidx-lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-livedata-ktx = { module = "androidx.lifecycle:lifecycle-livedata-ktx", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-viewmodel-savedstate = { module = "androidx.lifecycle:lifecycle-viewmodel-savedstate", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-common-java8 = { module = "androidx.lifecycle:lifecycle-common-java8", version.ref = "androidx-lifecycle" }
+#androidx-lifecycle-compiler = { module = "androidx.lifecycle:lifecycle-compiler", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-service = { module = "androidx.lifecycle:lifecycle-service", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-process = { module = "androidx.lifecycle:lifecycle-process", version.ref = "androidx-lifecycle" }
+#lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }
 # zeeeeej
 zeeeeej-zhongguohong = { module = "io.github.zeeeeej:zhongguohong", version.ref = "zeeeeej" }
 zeeeeej-zhongguohong-compose = { module = "io.github.zeeeeej:zhongguohong-compose", version.ref = "zeeeeej" }
@@ -54,8 +84,24 @@ ktor-client-android = { module = "io.ktor:ktor-client-android", version.ref = "k
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 ktor-serialization-kotlinx-protobuf = { module = "io.ktor:ktor-serialization-kotlinx-protobuf", version.ref = "ktor" }
 ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
+# Koin https://github.com/pererikbergman/kmp-viewmodel
+koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
+koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koinCompose" }
+koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
+koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koinComposeMultiplatform" }
 # coil
 coil = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
+# https://github.com/android/kotlin-multiplatform-samples/blob/main/Fruitties/gradle/libs.versions.toml
+androidx-datastore-core-okio = { group = "androidx.datastore", name = "datastore-core-okio", version.ref = "dataStoreVersion" }
+androidx-datastore-preferences-core = { group = "androidx.datastore", name = "datastore-preferences-core", version.ref = "dataStoreVersion" }
+# okio
+okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
+navigation-common = { module = "org.jetbrains.androidx.navigation:navigation-common", version.ref = "navigation" }
+navigation-runtime = { module = "org.jetbrains.androidx.navigation:navigation-runtime", version.ref = "navigation" }
+navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigation" }
+# yunext
+yunext-context = { module = "io.github.zeeeeej:yunext-context", version.ref = "yunext" }
+yunext-common = { module = "io.github.zeeeeej:yunext-common", version.ref = "yunext" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
@@ -66,6 +112,22 @@ kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref =
 kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 
 [bundles]
+navigation = ["navigation-common", "navigation-compose", "navigation-runtime"]
 zeeeeej = ["zeeeeej-zhongguohong", "zeeeeej-zhongguohong-compose"]
 kotlinxExt = ["kotlinx-datetime", "kotlinx-serialization-json"]
 ktor-client = ["ktor-client-core", "ktor-client-android", "ktor-serialization-kotlinx-json", "ktor-client-logging"]
+androidx-datastore = ["androidx-datastore-core-okio", "androidx-datastore-preferences-core"]
+androidx-lifecycle = [
+    "androidx-lifecycle-viewmodel",
+#    "androidx-lifecycle-viewmodel-ktx",
+    #    "androidx-lifecycle-livedata-ktx",
+    #    "androidx-lifecycle-runtime-ktx",
+    #    "androidx-lifecycle-viewmodel-savedstate",
+    #    "androidx-lifecycle-common-java8",
+    "androidx-lifecycle-runtime-compose",
+#    "androidx-lifecycle-service",
+#    "androidx-lifecycle-process",
+    "androidx-lifecycle-viewmodel-compose",
+]
+
+yunext = ["yunext-context", "yunext-common"]

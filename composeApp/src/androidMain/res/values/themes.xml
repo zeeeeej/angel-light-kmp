@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+<!--    <style name="Theme.AngelLight" parent="android:Theme.Material.Light.NoActionBar">-->
+
+
+<!--    </style>-->
+
+    <style name="Theme.MySplash" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
+
+    <style name="MySplashTheme" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">#CCCCCC</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
+        <item name="postSplashScreenTheme">@android:style/Theme.Material.Light.NoActionBar</item>
+    </style>
+</resources>
