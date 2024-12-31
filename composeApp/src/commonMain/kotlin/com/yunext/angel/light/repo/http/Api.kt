@@ -1,6 +1,8 @@
-//package com.yunext.angel.light.repo.http
-//
-//interface ApiService {
+package com.yunext.angel.light.repo.http
+
+import com.yunext.angel.light.BuildConfigX
+
+interface ApiService {
 //    @FormUrlEncoded
 //    @POST("/api/app/account/login")
 //    suspend fun login(
@@ -45,20 +47,20 @@
 ////        @Query("productCode") productCode: String,
 ////        @Query("result") result: String,
 //    ): HttpResp<Any?>
-//}
-//
-//
-//class Api {
-//
-//    companion object {
-//        private const val HOST = BuildConfig.HOST
-//        private const val TOKEN = "Authorization"
-//        private const val TIME_OUT = 15_000L
-//
-//        private const val IMG_PATH = "api/file/read?id="
-//
-//        fun img(id: String) = "$HOST$IMG_PATH$id"
-//
+}
+
+
+class Api {
+
+    companion object {
+        private const val HOST = BuildConfigX.HOST
+        private const val TOKEN = "Authorization"
+        private const val TIME_OUT = 15_000L
+
+        private const val IMG_PATH = "api/file/read?id="
+
+        fun img(id: String) = "$HOST$IMG_PATH$id"
+
 //        private val retrofit by lazy {
 //            Retrofit.Builder()
 //                .client(
@@ -75,21 +77,21 @@
 //        val apiService by lazy {
 //            retrofit.create(ApiService::class.java)
 //        }
-//    }
-//}
-//
-//data class ApiReq(
-//    val path: String,
-//    val type: ReqType
-//)
-//
-//
-//enum class ReqType {
-//    GET,
-//    POST
-//    ;
-//}
-//
+    }
+}
+
+data class ApiReq(
+    val path: String,
+    val type: ReqType
+)
+
+
+enum class ReqType {
+    GET,
+    POST
+    ;
+}
+
 //private fun createOKHttpClientBuilder(): OkHttpClient.Builder {
 //    val builder = OkHttpClient.Builder()
 //    val logging = HttpLoggingInterceptor().apply {

@@ -2,7 +2,7 @@ package com.yunext.angel.light.di
 
 import android.content.Context
 import com.yunext.angel.light.repo.sp.UserStore
-import com.yunext.angel.light.ui.viewmodel.MainViewModel
+import com.yunext.angel.light.ui.viewmodel.AppViewModel
 import org.koin.core.module.Module
 import org.koin.dsl.module
 
@@ -12,7 +12,7 @@ actual val platformViewModelModule: Module = module {
 //        MainViewModel(get())
 //    }
     factory { params ->
-        MainViewModel(get())
+        AppViewModel(get())
     }
 }
 actual val platformUserStoreModule: Module = module {

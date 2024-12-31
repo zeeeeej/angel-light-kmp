@@ -1,7 +1,7 @@
 package com.yunext.angel.light.di
 
 import com.yunext.angel.light.repo.sp.UserStore
-import com.yunext.angel.light.ui.viewmodel.MainViewModel
+import com.yunext.angel.light.ui.viewmodel.AppViewModel
 import kotlinx.cinterop.ExperimentalForeignApi
 import org.koin.core.module.Module
 import org.koin.dsl.module
@@ -14,7 +14,7 @@ actual val platformViewModelModule: Module = module {
 //    singleOf(::MainViewModel)
 
     factory { params ->
-        MainViewModel(get())
+        AppViewModel(get())
     }
 }
 

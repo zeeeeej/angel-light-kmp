@@ -16,6 +16,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import com.yunext.angel.light.resources.Res
 import com.yunext.angel.light.resources.login_bg
+import com.yunext.angel.light.ui.compoent.ImageBackground
 import com.yunext.angel.light.ui.compoent.Logo
 import org.jetbrains.compose.resources.painterResource
 
@@ -26,12 +27,7 @@ fun SplashScreen(modifier: Modifier = Modifier, content: Boolean = true) {
             .fillMaxSize()
             .padding(0.dp)
     ) {
-        Image(
-            painterResource(Res.drawable.login_bg),
-            null,
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop
-        )
+        ImageBackground()
         if (content) {
             Box(modifier) {
                 Column(

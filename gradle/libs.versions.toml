@@ -28,6 +28,7 @@ zeeeeej = "1.0.2"
 # other
 
 coil = "2.3.0"
+coil3-io = "3.0.0-alpha01"
 dataStoreVersion = "1.1.1"
 okio = "3.9.0"
 
@@ -39,7 +40,10 @@ koinComposeMultiplatform = "1.2.0-alpha3"
 #Android
 splashscreen ="1.0.1"
 
+easyqrscan = "0.1.6"
+
 [libraries]
+easyqrscan = { module = "io.github.kalinjul.easyqrscan:scanner", version.ref = "easyqrscan" }
 splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "splashscreen" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
@@ -91,6 +95,12 @@ koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koinComposeMultiplatform" }
 # coil
 coil = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
+coil3 = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil3-io" }
+coil3-network = { module = "io.coil-kt.coil3:coil-network", version.ref = "coil3-io" }
+coil3-video = { module = "io.coil-kt.coil3:coil-video", version.ref = "coil3-io" }
+coil3-svg = { module = "io.coil-kt.coil3:coil-svg", version.ref = "coil3-io" }
+coil3-gif = { module = "io.coil-kt.coil3:coil-gif", version.ref = "coil3-io" }
+coil3-core = { module = "io.coil-kt.coil3:coil-core", version.ref = "coil3-io" }
 # https://github.com/android/kotlin-multiplatform-samples/blob/main/Fruitties/gradle/libs.versions.toml
 androidx-datastore-core-okio = { group = "androidx.datastore", name = "datastore-core-okio", version.ref = "dataStoreVersion" }
 androidx-datastore-preferences-core = { group = "androidx.datastore", name = "datastore-preferences-core", version.ref = "dataStoreVersion" }

@@ -60,7 +60,10 @@ kotlin {
             implementation(libs.koin.compose)
 
             implementation(libs.bundles.yunext)
-//            implementation(libs.bundles.zeeeeej)
+            implementation(libs.bundles.zeeeeej)
+
+            implementation(libs.coil3)
+            implementation(libs.easyqrscan)
         }
     }
 }
