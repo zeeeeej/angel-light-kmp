@@ -5,7 +5,7 @@ import com.yunext.angel.light.domain.FinishReq
 import com.yunext.angel.light.domain.poly.Product
 import com.yunext.angel.light.domain.poly.ProductModel
 import com.yunext.angel.light.domain.poly.ProductType
-import com.yunext.angel.light.domain.poly.ScanResultVo
+import com.yunext.angel.light.domain.poly.ScanResult
 import com.yunext.angel.light.domain.poly.value
 import com.yunext.angel.light.repository.http.resp.UserResp
 import io.ktor.client.request.forms.MultiPartFormDataContent
@@ -19,7 +19,7 @@ interface HttpDatasource {
     suspend fun logout(token: String): HDResult<Boolean>
     suspend fun series(token: String): HDResult<List<Product>>
     suspend fun models(token: String, seriesId: String): HDResult<List<ProductModel>>
-    suspend fun check(token: String, code: String, type: ProductType): HDResult<ScanResultVo>
+    suspend fun check(token: String, code: String, type: ProductType): HDResult<ScanResult>
     suspend fun finish(
         token: String,
         req: FinishReq
@@ -126,13 +126,13 @@ class HttpDatasourceImpl : HttpDatasource {
         token: String,
         code: String,
         type: ProductType
-    ): HDResult<ScanResultVo> {
+    ): HDResult<ScanResult> {
         return try {
             val httpResp = apiService.check(token = token, code = code, type = type.value)
             val data = httpResp.data
             if (httpResp.success && data != null) {
                 HDResult.Success(
-                    ScanResultVo(
+                    ScanResult(
                         peiJianCode = data.componentCode ?: "",
                         wuLiuCode = data.code ?: code,
                         productCode = data.productCode ?: "",

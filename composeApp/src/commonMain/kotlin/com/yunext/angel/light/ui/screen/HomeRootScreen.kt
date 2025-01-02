@@ -64,8 +64,7 @@ fun RootScreen(
             HomeScreenWithVm(
                 Modifier
                     .fillMaxSize()
-                    .safeContentPadding()
-                    ,
+                    .safeContentPadding(),
                 user = user,
                 onProductModelSelected = { productModel, product, productType ->
                     coroutineScope.launch {
@@ -154,39 +153,34 @@ fun RootScreen(
                 "scanResult is null"
             }
 
-            Text("pack:$packet scanResult:$scanResult")
 
-//            ProductionScreenWithVm(modifier = Modifier
-//                .fillMaxSize()
-//                .padding(innerPadding), scanResult = scanResult, packet = packet, toScan = {
-//                val scan = RouteOwner.Scan(
-//                    packet = packet
-//                )
-//                navController.navigate(
-//                    scan.destination
-//                ) {
-//                    launchSingleTop = true
-//                    popUpTo(AppScreen.Production.route) {
-//                        inclusive = true
-//                    }
-//                }
-//            }, onBack = {
-//                val u = user
-//                if (u != null) {
-//                    val home = RouteOwner.Home(
-//                        user = u
-//                    )
-//                    navController.navigate(
-//                        home.destination
-//                    ) {
-//                        launchSingleTop = true
-//                        popUpTo(AppScreen.Production.route) {
-//                            inclusive = true
-//                        }
-//                    }
-//                }
-//
-//            })
+            ProductionScreenWithVm(modifier = Modifier
+                .fillMaxSize(), scanResult = scanResult, packet = packet, toScan = {
+                val scan = RouteOwner.Scan(
+                    packet = packet
+                )
+                navController.navigate(
+                    scan.destination
+                ) {
+                    launchSingleTop = true
+                    popUpTo(AppScreen.Production.route) {
+                        inclusive = true
+                    }
+                }
+            }, onBack = {
+                val u = user
+                val home = RouteOwner.Home(
+                    user = u
+                )
+                navController.navigate(
+                    home.destination
+                ) {
+                    launchSingleTop = true
+                    popUpTo(AppScreen.Production.route) {
+                        inclusive = true
+                    }
+                }
+            })
         }
     }
 

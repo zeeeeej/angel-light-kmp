@@ -5,7 +5,7 @@ import com.yunext.angel.light.domain.FinishReq
 import com.yunext.angel.light.domain.UserDomain
 import com.yunext.angel.light.domain.poly.Product
 import com.yunext.angel.light.domain.poly.ProductModel
-import com.yunext.angel.light.domain.poly.ScanResultVo
+import com.yunext.angel.light.domain.poly.ScanResult
 import com.yunext.angel.light.domain.poly.User
 import com.yunext.angel.light.domain.poly.ProductType
 import com.yunext.angel.light.repository.http.HttpDatasource
@@ -74,7 +74,7 @@ class AppRepo(
         token: String,
         code: String,
         type: ProductType
-    ): HDResult<ScanResultVo> {
+    ): HDResult<ScanResult> {
         return httpDatasource.check(token, code, type).let {
             r->
             when(r){

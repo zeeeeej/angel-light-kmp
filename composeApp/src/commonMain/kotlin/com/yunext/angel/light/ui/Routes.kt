@@ -4,7 +4,7 @@ import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
-import com.yunext.angel.light.domain.poly.ScanResultVo
+import com.yunext.angel.light.domain.poly.ScanResult
 import com.yunext.angel.light.domain.poly.User
 import com.yunext.angel.light.ui.vo.Packet
 import kotlinx.serialization.encodeToString
@@ -61,14 +61,14 @@ sealed interface RouteOwner {
             get() = "${screen.routeRoot}/${this.packet.encode()}"
     }
 
-    data class ScanResult(val scanResultVo: ScanResultVo, val packet: Packet) : RouteOwner {
+    data class ScanResult(val scanResultVo: com.yunext.angel.light.domain.poly.ScanResult, val packet: Packet) : RouteOwner {
         override val screen: AppScreen = AppScreen.ScanResult
 
         override val destination: String
             get() = "${screen.routeRoot}/${this.packet.encode()}/${this.scanResultVo.encode()}"
     }
 
-    class Production(private val scanResultVo: ScanResultVo, private val packet: Packet) :
+    class Production(private val scanResultVo: com.yunext.angel.light.domain.poly.ScanResult, private val packet: Packet) :
         RouteOwner {
         override val screen: AppScreen = AppScreen.Production
 
@@ -104,7 +104,7 @@ fun NavBackStackEntry.tryGetPacketSimple(): Packet? {
     return json?.decodeToPacket()
 }
 
-fun NavBackStackEntry.tryGetScanResultSimple(): ScanResultVo? {
+fun NavBackStackEntry.tryGetScanResultSimple(): ScanResult? {
     val json = this.arguments?.getString(NavigationKey.ScanResult.key, "")
     return json?.decodeToScanResult()
 }
@@ -134,8 +134,8 @@ fun String.encodeToUser(): User? = decodeSimple(this)
 fun Packet.encode(): String = encodeSimple(this)
 fun String.decodeToPacket(): Packet? = decodeSimple(this)
 
-fun ScanResultVo.encode(): String = encodeSimple(this)
-fun String.decodeToScanResult(): ScanResultVo? = decodeSimple(this)
+fun ScanResult.encode(): String = encodeSimple(this)
+fun String.decodeToScanResult(): ScanResult? = decodeSimple(this)
 
 private inline fun <reified T> decodeSimple(json: String): T? {
     return try {

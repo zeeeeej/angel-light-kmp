@@ -31,7 +31,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.ContentDrawScope
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -39,7 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yunext.angel.light.di.koinViewModelP1
-import com.yunext.angel.light.domain.poly.ScanResultVo
+import com.yunext.angel.light.domain.poly.ScanResult
 import com.yunext.angel.light.theme.Color333
 import com.yunext.angel.light.ui.common.clickablePure
 import com.yunext.angel.light.ui.compoent.ScanComponent
@@ -48,19 +47,15 @@ import com.yunext.angel.light.ui.viewmodel.ScanState
 import com.yunext.angel.light.ui.viewmodel.ScanViewModel
 import com.yunext.angel.light.ui.vo.Packet
 import com.yunext.kotlin.kmp.common.domain.Effect
-import com.yunext.kotlin.kmp.common.domain.effectProgress
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import qrscanner.CameraLens
-import qrscanner.OverlayShape
-import qrscanner.QrScanner
 
 @Composable
 fun ScanScreen(
     modifier: Modifier = Modifier,
     packet: Packet,
-    onScanResult: (Packet, ScanResultVo) -> Unit,
+    onScanResult: (Packet, ScanResult) -> Unit,
     onBack: () -> Unit
 ) {
     val vm: ScanViewModel = koinViewModelP1(packet)

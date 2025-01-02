@@ -3,10 +3,9 @@ package com.yunext.angel.light.domain
 import com.yunext.angel.light.common.HDResult
 import com.yunext.angel.light.domain.poly.Product
 import com.yunext.angel.light.domain.poly.ProductModel
-import com.yunext.angel.light.domain.poly.ScanResultVo
+import com.yunext.angel.light.domain.poly.ScanResult
 import com.yunext.angel.light.domain.poly.User
 import com.yunext.angel.light.domain.poly.ProductType
-import com.yunext.angel.light.repository.http.HttpDatasource
 import kotlinx.coroutines.flow.Flow
 
 val User.Companion.Empty by lazy {
@@ -52,7 +51,7 @@ interface UserDomain {
     suspend fun logout(token: String): HDResult<Unit>
     suspend fun series(token: String): HDResult<List<Product>>
     suspend fun models(token: String, seriesId: String): HDResult<List<ProductModel>>
-    suspend fun check(token: String, code: String, type: ProductType): HDResult<ScanResultVo>
+    suspend fun check(token: String, code: String, type: ProductType): HDResult<ScanResult>
     suspend fun finish(
         token: String,
         req: FinishReq

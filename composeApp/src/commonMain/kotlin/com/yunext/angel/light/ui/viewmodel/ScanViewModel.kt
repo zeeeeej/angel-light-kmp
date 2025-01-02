@@ -10,7 +10,7 @@ import com.yunext.angel.light.domain.Empty
 import com.yunext.angel.light.domain.poly.Product
 import com.yunext.angel.light.domain.poly.ProductModel
 import com.yunext.angel.light.domain.poly.ProductType
-import com.yunext.angel.light.domain.poly.ScanResultVo
+import com.yunext.angel.light.domain.poly.ScanResult
 import com.yunext.angel.light.domain.poly.User
 import com.yunext.angel.light.repository.AppRepo
 import com.yunext.angel.light.ui.vo.Packet
@@ -37,7 +37,7 @@ import kotlinx.coroutines.withContext
 
 data class ScanState(
     val user: User = User.Empty,
-    val effect: Effect<Unit, Pair<ScanResultVo, Packet>> = effectIdle(),
+    val effect: Effect<Unit, Pair<ScanResult, Packet>> = effectIdle(),
     val packet: Packet,
 )
 
@@ -45,7 +45,7 @@ data class ScanState(
 class ScanViewModel(private val appRepo: AppRepo, private val packet: Packet) : ViewModel() {
     private val user = appRepo.user
     private val userState = user.stateIn(viewModelScope, SharingStarted.Eagerly, User.Empty)
-    private val effect: MutableStateFlow<Effect<Unit, Pair<ScanResultVo, Packet>>> =
+    private val effect: MutableStateFlow<Effect<Unit, Pair<ScanResult, Packet>>> =
         MutableStateFlow(effectIdle())
     val state: Flow<ScanState> = combine(user, effect) { u, e ->
         Napier.e { "ScanViewModel state changed :$u $e" }

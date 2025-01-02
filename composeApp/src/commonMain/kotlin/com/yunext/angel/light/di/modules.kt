@@ -8,6 +8,7 @@ import com.yunext.angel.light.repository.sp.UserDatasourceImpl
 import com.yunext.angel.light.ui.viewmodel.HomeRootViewModel
 import com.yunext.angel.light.ui.viewmodel.LoginViewModel
 import com.yunext.angel.light.ui.viewmodel.MainViewModel
+import com.yunext.angel.light.ui.viewmodel.ProductionViewModel
 import com.yunext.angel.light.ui.viewmodel.ScanViewModel
 import io.github.aakira.napier.DebugAntilog
 import io.github.aakira.napier.Napier
@@ -36,6 +37,9 @@ val appModule = module {
     }
     factory { params ->
         ScanViewModel(get(),params.get())
+    }
+    factory { params ->
+        ProductionViewModel(get(),params.get(),params.get())
     }
 }
 
