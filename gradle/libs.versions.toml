@@ -15,7 +15,7 @@ androidx-material = "1.12.0"
 androidx-test-junit = "1.2.1"
 compose-multiplatform = "1.7.0"
 junit = "4.13.2"
-ktor = "2.3.11"
+
 navigation = "2.8.0-alpha08"
 
 kotlinx-coroutines = "1.8.0"
@@ -45,8 +45,16 @@ easyqrscan = "0.1.6"
 napier = "2.7.1"
 # https://github.com/Chaintech-Network/QRKitComposeMultiplatform?tab=readme-ov-file
 qr-kit = "3.0.6"
+logback = "1.5.6"
+# ktorfit
+# https://github.com/Foso/Ktorfit/blob/master/docs/CHANGELOG.md#201
+ktorfit ="2.1.0"
+ksp="2.0.10-1.0.24"
+ktor = "3.0.0"
 
 [libraries]
+ktorfit = { module = "de.jensklingenberg.ktorfit:ktorfit-lib", version.ref = "ktorfit" }
+logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 qr-kit = { module = "network.chaintech:qr-kit", version.ref = "qr-kit" }
 napier = { module = "io.github.aakira:napier", version.ref = "napier" }
 # [废弃]
@@ -127,12 +135,14 @@ composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "compose-mu
 composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+ktorfit = { id = "de.jensklingenberg.ktorfit", version.ref = "ktorfit" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 
 [bundles]
 navigation = ["navigation-common", "navigation-compose", "navigation-runtime"]
 zeeeeej = ["zeeeeej-zhongguohong", "zeeeeej-zhongguohong-compose"]
 kotlinxExt = ["kotlinx-datetime", "kotlinx-serialization-json"]
-ktor-client = ["ktor-client-core", "ktor-client-android", "ktor-serialization-kotlinx-json", "ktor-client-logging"]
+ktor-client = ["ktor-client-core",  "ktor-serialization-kotlinx-json", "ktor-client-logging","ktor-client-cio"]
 androidx-datastore = ["androidx-datastore-core-okio", "androidx-datastore-preferences-core"]
 androidx-lifecycle = [
     "androidx-lifecycle-viewmodel",

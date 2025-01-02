@@ -1,9 +1,9 @@
-package com.yunext.angel.light.repo.sp
+package com.yunext.angel.light.repository.sp
 
 import androidx.datastore.core.DataStoreFactory
 import androidx.datastore.core.okio.OkioSerializer
 import androidx.datastore.core.okio.OkioStorage
-import com.yunext.angel.light.di.json
+import com.yunext.angel.light.di.myJson
 import com.yunext.angel.light.domain.Empty
 import com.yunext.angel.light.domain.poly.User
 import kotlinx.coroutines.flow.Flow
@@ -17,12 +17,12 @@ import okio.use
 internal object UserSerializer : OkioSerializer<User> {
     override val defaultValue: User = User.Empty
     override suspend fun readFrom(source: BufferedSource): User {
-        return json.decodeFromString<User>(source.readUtf8())
+        return myJson.decodeFromString<User>(source.readUtf8())
     }
 
     override suspend fun writeTo(t: User, sink: BufferedSink) {
         sink.use {
-            it.writeUtf8(json.encodeToString(User.serializer(), t))
+            it.writeUtf8(myJson.encodeToString(User.serializer(), t))
         }
     }
 }

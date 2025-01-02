@@ -1,4 +1,4 @@
-package com.yunext.angel.light.repo.http
+package com.yunext.angel.light.repository.http
 
 class TokenException : RuntimeException(ApiException(103))
 object BizException : RuntimeException()

@@ -1,3 +1,4 @@
+import de.jensklingenberg.ktorfit.gradle.ErrorCheckingMode
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
@@ -7,6 +8,8 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kotlinx.serialization)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.ktorfit)
 }
 
 kotlin {
@@ -65,6 +68,10 @@ kotlin {
             implementation(libs.coil3)
             implementation(libs.qr.kit)
             implementation(libs.napier)
+
+            implementation(libs.bundles.ktor.client)
+            implementation(libs.ktorfit)
+            implementation(libs.ktor.client.content.negotiation)
         }
     }
 }
@@ -113,5 +120,11 @@ compose.resources {
     // uses the auto value to generate the Res class only if the current project has an explicit
     // implementation or api dependency on the resource library.
     generateResClass = auto
+}
+
+// https://foso.github.io/Ktorfit/configuration/
+ktorfit{
+    errorCheckingMode = ErrorCheckingMode.NONE
+    generateQualifiedTypeName = true
 }
 

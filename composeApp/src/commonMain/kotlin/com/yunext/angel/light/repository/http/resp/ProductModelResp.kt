@@ -1,5 +1,8 @@
-package com.yunext.angel.light.repo.http.resp
+package com.yunext.angel.light.repository.http.resp
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class ProductModelResp(
     val id: String?,
     val name: String?,

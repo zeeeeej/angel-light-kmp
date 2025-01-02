@@ -1,8 +1,6 @@
-package com.yunext.angel.light.repo
+package com.yunext.angel.light.repository.sp
 
 import com.yunext.angel.light.domain.poly.User
-import com.yunext.angel.light.repo.sp.UserStore
-import com.yunext.angel.light.repo.sp.clear
 import kotlinx.coroutines.flow.Flow
 
 interface UserDatasource {

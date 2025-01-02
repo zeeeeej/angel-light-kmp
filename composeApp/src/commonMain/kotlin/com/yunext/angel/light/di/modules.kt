@@ -1,8 +1,10 @@
 package com.yunext.angel.light.di
 
-import com.yunext.angel.light.repo.AppRepo
-import com.yunext.angel.light.repo.UserDatasource
-import com.yunext.angel.light.repo.UserDatasourceImpl
+import com.yunext.angel.light.repository.AppRepo
+import com.yunext.angel.light.repository.http.HttpDatasource
+import com.yunext.angel.light.repository.http.HttpDatasourceImpl
+import com.yunext.angel.light.repository.sp.UserDatasource
+import com.yunext.angel.light.repository.sp.UserDatasourceImpl
 import com.yunext.angel.light.ui.viewmodel.HomeRootViewModel
 import com.yunext.angel.light.ui.viewmodel.LoginViewModel
 import com.yunext.angel.light.ui.viewmodel.MainViewModel
@@ -18,7 +20,8 @@ import org.koin.dsl.module
 
 val appModule = module {
     single<UserDatasource> { UserDatasourceImpl(get()) } //bind UserDatasource::class
-    single<AppRepo> { AppRepo(get()) }
+    single<HttpDatasource> { HttpDatasourceImpl() } //bind UserDatasource::class
+    single<AppRepo> { AppRepo(get(),get()) }
 
     factory { params ->
         LoginViewModel(get())
@@ -52,4 +55,4 @@ object KoinInit {
     }
 }
 
-val json = Json { ignoreUnknownKeys = true }
+val myJson = Json { ignoreUnknownKeys = true }

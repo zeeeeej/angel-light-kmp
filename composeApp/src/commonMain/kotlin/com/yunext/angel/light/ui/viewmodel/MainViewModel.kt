@@ -11,7 +11,7 @@ import com.yunext.angel.light.domain.isEmpty
 import com.yunext.angel.light.domain.poly.Product
 import com.yunext.angel.light.domain.poly.ProductModel
 import com.yunext.angel.light.domain.poly.User
-import com.yunext.angel.light.repo.AppRepo
+import com.yunext.angel.light.repository.AppRepo
 import com.yunext.kotlin.kmp.common.domain.Effect
 import com.yunext.kotlin.kmp.common.domain.effectFail
 import com.yunext.kotlin.kmp.common.domain.effectIdle

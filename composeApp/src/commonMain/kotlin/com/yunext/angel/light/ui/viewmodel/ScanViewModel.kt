@@ -3,7 +3,6 @@ package com.yunext.angel.light.ui.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yunext.angel.light.BuildConfigX
-import com.yunext.angel.light.BuildConfigX.IGNORE_CHECK_CODE
 import com.yunext.angel.light.common.HDResult
 import com.yunext.angel.light.common.throwableCaseOf
 import com.yunext.angel.light.common.throwableOf
@@ -13,7 +12,7 @@ import com.yunext.angel.light.domain.poly.ProductModel
 import com.yunext.angel.light.domain.poly.ProductType
 import com.yunext.angel.light.domain.poly.ScanResultVo
 import com.yunext.angel.light.domain.poly.User
-import com.yunext.angel.light.repo.AppRepo
+import com.yunext.angel.light.repository.AppRepo
 import com.yunext.angel.light.ui.vo.Packet
 import com.yunext.kotlin.kmp.common.domain.Effect
 import com.yunext.kotlin.kmp.common.domain.effectFail
@@ -75,16 +74,10 @@ class ScanViewModel(private val appRepo: AppRepo, private val packet: Packet) : 
 
                 when (result) {
                     is HDResult.Fail -> {
-                        if (!IGNORE_CHECK_CODE) {
-                            effect.value = effectFail(throwableOf { msg })
-                        } else {
-                            effect.value =
-                                effectSuccess(
-                                    output =
-                                    ScanResultVo(code, "", "", "", "", "", "") to packet
-                                )
+                        effect.value = effectFail(throwableOf {
+                            result.error.message ?: msg
+                        })
 
-                        }
                     }
 
                     is HDResult.Success -> {
@@ -116,8 +109,13 @@ class ScanViewModel(private val appRepo: AppRepo, private val packet: Packet) : 
     private fun checkV2(code: String, productCOde: String, type: ProductType) {
         viewModelScope.launch {
             try {
+
                 effect.value = effectIdle()
                 effect.value = effectProgress()
+                val msg = when (type) {
+                    ProductType.PeiJian -> "找不到配件码${code}信息"
+                    ProductType.Device -> "找不到物流码${code}对应配件码信息"
+                }
                 val token = userState.value.token
                 val result = withContext(Dispatchers.IO) {
                     appRepo.check(
@@ -128,26 +126,9 @@ class ScanViewModel(private val appRepo: AppRepo, private val packet: Packet) : 
                 }
                 when (result) {
                     is HDResult.Fail -> {
-                        if (!IGNORE_CHECK_CODE) {
-                            val msg = when (type) {
-                                ProductType.PeiJian -> "找不到配件码${code}信息"
-                                ProductType.Device -> "找不到物流码${code}对应配件码信息"
-                            }
-                            effect.value = effectFail(throwableOf { msg })
-                        } else {
-                            effect.value =
-                                effectSuccess(
-                                    output = ScanResultVo(
-                                        code,
-                                        "",
-                                        "",
-                                        "",
-                                        "",
-                                        "",
-                                        ""
-                                    ) to packet
-                                )
-                        }
+
+                        effect.value = effectFail(throwableOf { result.error.message ?: msg })
+
                     }
 
                     is HDResult.Success -> {

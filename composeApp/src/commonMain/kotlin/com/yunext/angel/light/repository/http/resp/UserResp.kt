@@ -1,4 +1,4 @@
-package com.yunext.angel.light.repo.http.resp
+package com.yunext.angel.light.repository.http.resp
 
 import com.yunext.angel.light.domain.poly.User
 import kotlinx.serialization.Serializable

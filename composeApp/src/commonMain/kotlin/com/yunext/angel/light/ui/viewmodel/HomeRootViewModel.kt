@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import com.yunext.angel.light.domain.Empty
 import com.yunext.angel.light.domain.isEmpty
 import com.yunext.angel.light.domain.poly.User
-import com.yunext.angel.light.repo.AppRepo
+import com.yunext.angel.light.repository.AppRepo
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine

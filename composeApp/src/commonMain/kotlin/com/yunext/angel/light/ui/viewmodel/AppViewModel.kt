@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yunext.angel.light.domain.Empty
 import com.yunext.angel.light.domain.poly.User
-import com.yunext.angel.light.repo.AppRepo
+import com.yunext.angel.light.repository.AppRepo
 import com.yunext.kotlin.kmp.common.domain.Effect
 import com.yunext.kotlin.kmp.common.domain.effectCompleted
 import com.yunext.kotlin.kmp.common.domain.effectIdle

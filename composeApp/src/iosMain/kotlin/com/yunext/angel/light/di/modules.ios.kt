@@ -1,6 +1,6 @@
 package com.yunext.angel.light.di
 
-import com.yunext.angel.light.repo.sp.UserStore
+import com.yunext.angel.light.repository.sp.UserStore
 import com.yunext.angel.light.ui.viewmodel.AppViewModel
 import kotlinx.cinterop.ExperimentalForeignApi
 import org.koin.core.module.Module

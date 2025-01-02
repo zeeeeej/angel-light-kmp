@@ -1,7 +1,7 @@
 package com.yunext.angel.light.di
 
 import android.content.Context
-import com.yunext.angel.light.repo.sp.UserStore
+import com.yunext.angel.light.repository.sp.UserStore
 import com.yunext.angel.light.ui.viewmodel.AppViewModel
 import org.koin.core.module.Module
 import org.koin.dsl.module
