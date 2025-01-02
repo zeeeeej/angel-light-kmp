@@ -14,6 +14,8 @@ import de.jensklingenberg.ktorfit.http.POST
 import de.jensklingenberg.ktorfit.http.Query
 import io.github.aakira.napier.Napier
 import io.ktor.client.HttpClient
+import io.ktor.client.HttpClientConfig
+import io.ktor.client.engine.HttpClientEngineConfig
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -63,6 +65,9 @@ interface ApiService {
 
 }
 
+expect fun myHttpClient(config:HttpClientConfig<out HttpClientEngineConfig>.()->Unit): HttpClient
+
+
 
 class Api {
 
@@ -71,7 +76,13 @@ class Api {
         private const val TIME_OUT = 15_000L
         fun img(id: String) = "$HOST$IMG_PATH$id"
         private const val TAG = "_ktor_"
-        private val ktorClient = HttpClient(CIO) {
+        private val ktorClient = myHttpClient{
+            cfg()
+        }
+        private fun HttpClientConfig<out HttpClientEngineConfig>.cfg(tag:String = TAG, timeout:Long = TIME_OUT){
+            engine {
+
+            }
             install(ContentNegotiation) {
                 // NoTransformationFoundException
                 // https://ktor.io/docs/faq.html#no-transformation-found-exception
@@ -82,12 +93,12 @@ class Api {
                 })
             }
             install(HttpTimeout) {
-                connectTimeoutMillis = TIME_OUT
+                connectTimeoutMillis = timeout
             }
             install(Logging) {
                 logger = object : Logger {
                     override fun log(message: String) {
-                        Napier.d(tag = TAG) { message }
+                        Napier.d(tag = tag) { message }
                     }
                 }
                 level = LogLevel.ALL
@@ -109,3 +120,4 @@ class Api {
         }
     }
 }
+
