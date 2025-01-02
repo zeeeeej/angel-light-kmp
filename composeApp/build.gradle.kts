@@ -63,7 +63,8 @@ kotlin {
             implementation(libs.bundles.zeeeeej)
 
             implementation(libs.coil3)
-            implementation(libs.easyqrscan)
+            implementation(libs.qr.kit)
+            implementation(libs.napier)
         }
     }
 }

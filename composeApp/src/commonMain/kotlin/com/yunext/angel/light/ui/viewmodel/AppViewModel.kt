@@ -9,6 +9,7 @@ import com.yunext.kotlin.kmp.common.domain.Effect
 import com.yunext.kotlin.kmp.common.domain.effectCompleted
 import com.yunext.kotlin.kmp.common.domain.effectIdle
 import com.yunext.kotlin.kmp.common.domain.effectProgress
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,6 +31,9 @@ class AppViewModel(private val appRepo: AppRepo) : ViewModel() {
     }
 
     init {
+        Napier.d {
+            "AppViewModel init... "
+        }
         loadUser()
     }
 

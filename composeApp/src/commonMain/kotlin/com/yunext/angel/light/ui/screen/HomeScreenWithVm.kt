@@ -23,6 +23,7 @@ import com.yunext.kotlin.kmp.common.domain.Effect
 fun HomeScreenWithVm(
     modifier: Modifier,
     user: User,
+    onProductModelSelected:OnProductModelSelected
 ) {
     val vm: MainViewModel = koinViewModelP1(user)
     val state by vm.state.collectAsStateWithLifecycle(MainState(user = user))
@@ -54,9 +55,7 @@ fun HomeScreenWithVm(
         HomeScreen(modifier = modifier,
             products = state.products,
             productModels = state.productModels,
-            onProductModelSelected = {
-                _,_,_->
-            },
+            onProductModelSelected = onProductModelSelected,
             onExit = {
                 vm.logout()
             },
