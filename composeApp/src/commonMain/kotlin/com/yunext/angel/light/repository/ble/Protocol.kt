@@ -4,7 +4,7 @@ import com.yunext.kotlin.kmp.common.util.hdMD5
 
 internal object Protocol {
 
-    private const val PREFIX = "light_"
+    internal const val PREFIX = "light_"
 
     const val MTU = 512
     const val UUID_SERVICE = "616e6765-6c62-6c70-6573-657276696365"

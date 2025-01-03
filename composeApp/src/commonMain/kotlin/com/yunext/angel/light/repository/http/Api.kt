@@ -1,6 +1,7 @@
 package com.yunext.angel.light.repository.http
 
 import com.yunext.angel.light.BuildConfigX
+import com.yunext.angel.light.domain.FinishReq
 import com.yunext.angel.light.repository.http.resp.CheckResp
 import com.yunext.angel.light.repository.http.resp.UserResp
 import de.jensklingenberg.ktorfit.http.Body
@@ -47,7 +48,7 @@ interface ApiService {
     @Headers("Content-Type: application/json")
     suspend fun finish(
         @Header(TOKEN) token: String,
-        @Body body: MultiPartFormDataContent,
+        @Body body: Map<String, String>,
     ): HttpRespDataEmpty
 
 }

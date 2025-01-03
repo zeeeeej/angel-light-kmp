@@ -161,7 +161,7 @@ class HttpDatasourceImpl : HttpDatasource {
         req: FinishReq
     ): HDResult<Boolean> {
         return try {
-            val map: Map<String, Any> = when (req) {
+            val map: Map<String, String> = when (req) {
                 is FinishReq.Device -> mapOf(
                     "code" to req.code,
                     "componentCode" to req.componentCode,
@@ -176,22 +176,7 @@ class HttpDatasourceImpl : HttpDatasource {
                     "type" to ProductType.PeiJian.value,
                 )
             }
-
-            val json = json.encodeToString(map)
-            val body = MultiPartFormDataContent(
-                listOf(
-                    PartData.FormItem(
-                        value = json,
-                        dispose = {
-
-                        },
-                        partHeaders = Headers.Empty
-
-                    )
-                )
-            )
-//            val body = json.toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
-            val httpResp = apiService.finish(token = token, body = body)
+            val httpResp = apiService.finish(token = token, body = map)
             if (httpResp.success) {
                 HDResult.Success(true)
             } else {

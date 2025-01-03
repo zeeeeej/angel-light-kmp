@@ -48,7 +48,6 @@ enum class ScanStatus {
 @Composable
 fun ScanComponent(
     modifier: Modifier = Modifier,
-    status: () -> ScanStatus,
     type: ProductType,
     onScanResult: (String) -> Unit = {},
     onScanFail: (String) -> Unit = {},

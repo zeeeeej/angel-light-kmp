@@ -105,6 +105,11 @@ class ScanViewModel(private val appRepo: AppRepo, private val packet: Packet) : 
         }
     }
 
+    override fun onCleared() {
+        super.onCleared()
+
+    }
+
 
     private fun checkV2(code: String, productCOde: String, type: ProductType) {
         viewModelScope.launch {

@@ -37,10 +37,13 @@ import com.yunext.angel.light.di.koinViewModelP2
 import com.yunext.angel.light.ui.compoent.CancelableLoadingComponent
 import com.yunext.angel.light.ui.compoent.HistoriesInfo
 import com.yunext.angel.light.ui.compoent.LoadingComponent
+import com.yunext.angel.light.ui.compoent.Toast
 import com.yunext.angel.light.ui.viewmodel.ProductionState
 import com.yunext.angel.light.ui.viewmodel.ProductionViewModel
 import com.yunext.angel.light.ui.vo.Packet
+import com.yunext.angel.light.ui.vo.ProductionResult
 import com.yunext.angel.light.ui.vo.ScanResultVo
+import com.yunext.kotlin.kmp.common.domain.Effect
 import com.yunext.kotlin.kmp.common.domain.doing
 import kotlinx.coroutines.launch
 
@@ -51,13 +54,20 @@ fun ProductionScreenWithVm(
     scanResult: ScanResultVo,
     packet: Packet,
     toScan: (Packet) -> Unit,
-    onBack:()->Unit
+    onBack: () -> Unit
 ) {
-    val vm: ProductionViewModel = koinViewModelP2(scanResult,packet)
-    val state by vm.state.collectAsStateWithLifecycle(ProductionState(product = packet.product, productModel = packet.productModel, productType = packet.type,scanResult=scanResult))
+    val vm: ProductionViewModel = koinViewModelP2(scanResult, packet)
+    val state by vm.state.collectAsStateWithLifecycle(
+        ProductionState(
+            product = packet.product,
+            productModel = packet.productModel,
+            productType = packet.type,
+            scanResult = scanResult
+        )
+    )
     val coroutineScope = rememberCoroutineScope()
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
-        bottomSheetState = rememberBottomSheetState( Collapsed)
+        bottomSheetState = rememberBottomSheetState(Collapsed)
     )
 //                LaunchedEffect(Unit) {
 //                    bottomSheetScaffoldState.bottomSheetState.expand()
@@ -73,19 +83,19 @@ fun ProductionScreenWithVm(
             state.toast
         }
     }
-    LaunchedEffect(Unit) {
-        snapshotFlow {
-            toast
-        }.collect {
-            if (it.isEmpty()) {
-            } else {
-                            bottomSheetScaffoldState.snackbarHostState.showSnackbar(it)
-//                ToastUtil.toast(it)
-                vm.clearToast()
-            }
-        }
-
-    }
+//    LaunchedEffect(Unit) {
+//        snapshotFlow {
+//            toast
+//        }.collect {
+//            if (it.isEmpty()) {
+//            } else {
+//                bottomSheetScaffoldState.snackbarHostState.showSnackbar(it)
+////                ToastUtil.toast(it)
+//                vm.clearToast()
+//            }
+//        }
+//
+//    }
     val histories: @Composable () -> Unit = {
         HistoriesInfo(
             Modifier
@@ -122,6 +132,11 @@ fun ProductionScreenWithVm(
                     .padding(0.dp)
             ) {
 
+                LaunchedEffect(state.commitEffect) {
+                    if (state.commitEffect is Effect.Success<*, *>) {
+                        toScan(packet)
+                    }
+                }
                 ProductionScreen(Modifier.padding(innerPadding),
                     scanResult = scanResult,
                     productModel = packet.productModel,
@@ -132,10 +147,7 @@ fun ProductionScreenWithVm(
                     },
                     onCommit = {
                         coroutineScope.launch {
-                            val r = vm.commit()
-                            if (r) {
-                                toScan(packet)
-                            }
+                            vm.reset()
                         }
                     }, onPower = {
                         vm.power(!state.power)
@@ -151,12 +163,12 @@ fun ProductionScreenWithVm(
                         loggerSupport = !loggerSupport
                     })
 
-                val loadingConnect: Boolean by remember {
+                val loadingConnect: Boolean by remember(state.connectEffect) {
                     derivedStateOf {
-                        state.connectEffect .doing
+                        state.connectEffect.doing
                     }
                 }
-                val loadingCommit: Boolean by remember {
+                val loadingCommit: Boolean by remember(state.commitEffect) {
                     derivedStateOf {
                         state.commitEffect.doing
                     }
@@ -236,7 +248,14 @@ fun ProductionScreenWithVm(
                     }
                 }
 
-//                            Text("${state.bleLogs.size}条", fontSize = 44.sp)
+                Toast(
+                    Modifier
+                        .padding(horizontal = 32.dp, vertical = 120.dp)
+                        .fillMaxWidth()
+                        .align(Alignment.BottomCenter), black = true, msg = toast
+                ) {
+                    vm.clearToast()
+                }
             }
         }
     }

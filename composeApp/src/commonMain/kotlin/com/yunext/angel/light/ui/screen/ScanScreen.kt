@@ -42,7 +42,7 @@ import com.yunext.angel.light.domain.poly.ScanResult
 import com.yunext.angel.light.theme.Color333
 import com.yunext.angel.light.ui.common.clickablePure
 import com.yunext.angel.light.ui.compoent.ScanComponent
-import com.yunext.angel.light.ui.compoent.ScanStatus
+import com.yunext.angel.light.ui.compoent.Toast
 import com.yunext.angel.light.ui.viewmodel.ScanState
 import com.yunext.angel.light.ui.viewmodel.ScanViewModel
 import com.yunext.angel.light.ui.vo.Packet
@@ -86,20 +86,16 @@ fun ScanScreen(
                     color = Color.Black
                 )
             }) {
-        ScanComponent(Modifier.fillMaxSize(),
-            status = { if (state.effect is Effect.Progress<*, *> /*|| result == null*/) ScanStatus.Checking else ScanStatus.Idle },
-            onScanResult = { result ->
-                vm.check(result, packet)
-            }, onScanFail = {
-                coroutineScope.launch {
+        if (state.effect !is Effect.Success) {
+            ScanComponent(Modifier.fillMaxSize(),
+                //status = { if (state.effect is Effect.Progress<*, *> /*|| result == null*/) ScanStatus.Checking else ScanStatus.Idle },
+                onScanResult = { result ->
+                    vm.check(result, packet)
+                }, onScanFail = {
                     errorMsg = it
-                    delay(ScanViewModel.DELAY)
-                    errorMsg = ""
-                }
-            }, type = packet.type, onBack = onBack
-        )
-
-
+                }, type = packet.type, onBack = onBack
+            )
+        }
 
         LaunchedEffect(state.effect) {
             Napier.e { "ScanScreen LaunchedEffect ${state.effect}" }
@@ -108,8 +104,6 @@ fun ScanScreen(
                 is Effect.Fail -> {
                     Napier.e { "ScanScreen check 失败 :$errorMsg" }
                     errorMsg = ef.output.message ?: "-"
-                    delay(ScanViewModel.DELAY)
-                    errorMsg = ""
                 }
 
                 Effect.Idle -> {}
@@ -117,40 +111,22 @@ fun ScanScreen(
                 is Effect.Success -> {
                     Napier.d { "ScanScreen check 成功 :${ef.output}" }
                     val (result, p) = ef.output
+//                    coroutineScope.launch {
+//                    delay(100)
                     onScanResult(p, result)
+//                    }
                 }
             }
         }
 
-//        LaunchedEffect(state) {
-////            XLog.d("Toast errorMsg --${state.effect}")
-//            when (val e = state.effect) {
-//
-//                Effect.Doing -> {}
-//                is Effect.Fail -> {
-//                    errorMsg = e.msg
-//                    delay(ScanViewModel.DELAY)
-//                    errorMsg = ""
-//                }
-//
-//                Effect.Idle -> {}
-//                Effect.Success -> {}
-//            }
-//
-//        }
 
-        AnimatedVisibility(
-
-            errorMsg.isNotBlank(), modifier = Modifier
-                .align(Alignment.TopCenter)
+        Toast(
+            Modifier
+                .padding(horizontal = 32.dp, vertical = 120.dp)
                 .fillMaxWidth()
-
+                .align(Alignment.TopCenter), errorMsg
         ) {
-            Toast(
-                Modifier
-                    .wrapContentSize()
-                    .align(Alignment.TopCenter), errorMsg
-            )
+            errorMsg = ""
         }
 
 //        val loading: Boolean by remember {
@@ -179,34 +155,6 @@ fun ScanScreen(
     }
 }
 
-sealed interface ToastData {
-    data object Nan : ToastData
-    data class Show(val msg: String) : ToastData
-}
-
-@Composable
-private fun Toast(modifier: Modifier = Modifier, msg: String) {
-    if (msg.isNotBlank()) {
-        Box(
-            modifier = modifier
-                .padding(top = 120.dp)
-                .clip(RoundedCornerShape(16.dp))
-                .background(Color.White)
-                .padding(16.dp), contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = msg,
-                modifier = Modifier,
-                style = TextStyle.Default.copy(
-                    color = Color.Red,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold
-                )
-            )
-        }
-
-    }
-}
 
 @Composable
 private fun Title(

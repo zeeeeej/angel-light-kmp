@@ -75,6 +75,7 @@ kotlin {
             implementation(libs.bundles.ktor.client)
             implementation(libs.ktorfit)
             implementation(libs.ktor.client.content.negotiation)
+            implementation(libs.kable)
         }
     }
 }
