@@ -22,6 +22,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.yunext.angel.light.di.koinViewModelP1
 import com.yunext.angel.light.domain.poly.User
+import com.yunext.angel.light.repository.ble.currentTime
 import com.yunext.angel.light.ui.AppScreen
 import com.yunext.angel.light.ui.RouteOwner
 import com.yunext.angel.light.ui.navArgument
@@ -31,6 +32,7 @@ import com.yunext.angel.light.ui.tryGetScanResultSimple
 import com.yunext.angel.light.ui.viewmodel.HomeRootViewModel
 import com.yunext.angel.light.ui.viewmodel.RootState
 import com.yunext.angel.light.ui.vo.Packet
+import io.github.aakira.napier.Napier
 
 import kotlinx.coroutines.launch
 
@@ -129,7 +131,13 @@ fun RootScreen(
                         }
                     }
                 }, onBack = {
-                    navController.popBackStack()
+                    // TODO 区别
+//                    val result = navController.popBackStack(RouteOwner.Home(user).destination,false)
+                    val result = navController.popBackStack(AppScreen.Scan.route,true)
+                    Napier.w {
+                        "ScanScreen onBack ${currentTime()} $result"
+                    }
+
                 }
             )
         }
