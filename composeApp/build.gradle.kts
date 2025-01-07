@@ -32,19 +32,9 @@ kotlin {
     }
 
     sourceSets {
-        iosX64Main.dependencies {
+        iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
-            implementation(libs.qr.kit.iosx64)
-        }
-
-        iosArm64Main.dependencies {
-            implementation(libs.ktor.client.darwin)
-            implementation(libs.qr.kit.iosarm64)
-        }
-
-        iosSimulatorArm64Main.dependencies {
-            implementation(libs.ktor.client.darwin)
-            implementation(libs.qr.kit.iossimulatorarm64)
+            implementation(libs.qr.kit)
         }
 
         androidMain.dependencies {

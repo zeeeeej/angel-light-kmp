@@ -17,7 +17,7 @@ actual fun ScanReal(
 ) {
     QrScanner(
         modifier = Modifier,
-        flashlightOn = false,
+        flashlightOn = flashLight,
         cameraLens = CameraLens.Back,
         openImagePicker = false,
         onCompletion = {

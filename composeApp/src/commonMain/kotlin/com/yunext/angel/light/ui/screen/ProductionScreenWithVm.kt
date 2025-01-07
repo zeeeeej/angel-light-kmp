@@ -9,9 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.BottomSheetScaffold
-import androidx.compose.material.BottomSheetValue
-import androidx.compose.material.BottomSheetValue.Collapsed
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetValue
@@ -19,8 +16,6 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.rememberBottomSheetScaffoldState
-import androidx.compose.material.rememberBottomSheetState
 import androidx.compose.material.rememberModalBottomSheetState
 
 import androidx.compose.runtime.Composable
@@ -31,7 +26,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -54,7 +48,6 @@ import com.yunext.angel.light.ui.compoent.ToastData
 import com.yunext.angel.light.ui.viewmodel.ProductionState
 import com.yunext.angel.light.ui.viewmodel.ProductionViewModel
 import com.yunext.angel.light.ui.vo.Packet
-import com.yunext.angel.light.ui.vo.ProductionResult
 import com.yunext.angel.light.ui.vo.ScanResultVo
 import com.yunext.kotlin.kmp.common.domain.Effect
 import com.yunext.kotlin.kmp.common.domain.doing
@@ -288,16 +281,17 @@ fun ProductionScreenWithVm(
                         if (it is ToastData.Show) {
                             Box(
                                 modifier = Modifier
+                                    .padding(10.dp)
                                     .clip(RoundedCornerShape(16.dp))
-                                    .shadow(4.dp)
-                                    .background(中国色.月白.color)
+                                    .shadow(8.dp)
+                                    .background(Color.White)
                                     .padding(16.dp), contentAlignment = Alignment.Center
                             ) {
                                 Text(
                                     text = it.msg,
                                     modifier = Modifier,
                                     style = TextStyle.Default.copy(
-                                        color = Color.Red,
+                                        color = 中国色.大红.color,
                                         fontSize = 18.sp,
                                         fontWeight = FontWeight.Bold
                                     )
@@ -322,12 +316,11 @@ fun ProductionScreenWithVm(
 //    }
 
 
-
     ModalBottomSheetLayout(
         sheetContent = {
             histories()
         },
-        modifier =  Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize(),
         sheetState = rememberModalBottomSheetState,//rememberModalBottomSheetState(ModalBottomSheetValue.Hidden),
         sheetGesturesEnabled = false
     ) {

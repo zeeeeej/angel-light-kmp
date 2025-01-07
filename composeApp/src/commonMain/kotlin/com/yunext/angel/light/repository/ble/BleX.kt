@@ -32,16 +32,17 @@ object BleX {
 
     private const val TAG = "blex"
     private const val DEBUG = false
+    val logChannel: Channel<BleLog> = Channel()
+    val downChannel: Channel<BleEvent> = Channel()
     private val bleScope =
         CoroutineScope(SupervisorJob() + Dispatchers.Main + CoroutineExceptionHandler { _, throwable ->
             d {
                 "CoroutineExceptionHandler throwable:$throwable"
             }
+            downChannel.trySend(BleEvent.Error(throwable.message ?: "蓝牙处理异常"))
         })
     private var autoConnectJob: Job? = null
     private val upChannel: Channel<ByteArray> = Channel()
-    val logChannel: Channel<BleLog> = Channel()
-    val downChannel: Channel<BleEvent> = Channel()
 
 //    init {
 //
