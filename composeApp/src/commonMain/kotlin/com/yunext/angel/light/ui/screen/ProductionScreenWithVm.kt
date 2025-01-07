@@ -2,20 +2,26 @@ package com.yunext.angel.light.ui.screen
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.BottomSheetScaffold
 import androidx.compose.material.BottomSheetValue
 import androidx.compose.material.BottomSheetValue.Collapsed
 import androidx.compose.material.FloatingActionButton
+import androidx.compose.material.ModalBottomSheetLayout
+import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.rememberBottomSheetScaffoldState
 import androidx.compose.material.rememberBottomSheetState
+import androidx.compose.material.rememberModalBottomSheetState
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -28,7 +34,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -38,6 +50,7 @@ import com.yunext.angel.light.ui.compoent.CancelableLoadingComponent
 import com.yunext.angel.light.ui.compoent.HistoriesInfo
 import com.yunext.angel.light.ui.compoent.LoadingComponent
 import com.yunext.angel.light.ui.compoent.Toast
+import com.yunext.angel.light.ui.compoent.ToastData
 import com.yunext.angel.light.ui.viewmodel.ProductionState
 import com.yunext.angel.light.ui.viewmodel.ProductionViewModel
 import com.yunext.angel.light.ui.vo.Packet
@@ -66,9 +79,11 @@ fun ProductionScreenWithVm(
         )
     )
     val coroutineScope = rememberCoroutineScope()
-    val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
-        bottomSheetState = rememberBottomSheetState(Collapsed)
-    )
+//    val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
+//        bottomSheetState = rememberBottomSheetState(Collapsed)
+//    )
+
+    val rememberModalBottomSheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
 //                LaunchedEffect(Unit) {
 //                    bottomSheetScaffoldState.bottomSheetState.expand()
 //                }
@@ -102,7 +117,8 @@ fun ProductionScreenWithVm(
                 .fillMaxWidth()
                 .heightIn(min = 320.dp, max = 320.dp), list = state.bleLogs, onClose = {
                 coroutineScope.launch {
-                    bottomSheetScaffoldState.bottomSheetState.collapse()
+//                    bottomSheetScaffoldState.bottomSheetState.collapse()
+                    rememberModalBottomSheetState.hide()
                 }
             }, onShare = {
                 if (it.isNotEmpty()) {
@@ -118,13 +134,8 @@ fun ProductionScreenWithVm(
             }
         )
     }
-    BottomSheetScaffold(modifier = Modifier.fillMaxSize(),
-        scaffoldState = bottomSheetScaffoldState,
-        sheetPeekHeight = 0.dp,
-        sheetContent = {
-            histories()
-        }
-    ) { _ ->
+
+    val content: @Composable () -> Unit = {
         Scaffold { innerPadding ->
             Box(
                 Modifier
@@ -215,7 +226,7 @@ fun ProductionScreenWithVm(
 
                 }
 
-                val show by remember(bottomSheetScaffoldState.bottomSheetState) {
+                /*val show by remember(bottomSheetScaffoldState.bottomSheetState) {
                     derivedStateOf {
 //                                    Log.d("[show]",
 //                                        bottomSheetScaffoldState.bottomSheetState.run {
@@ -231,6 +242,25 @@ fun ProductionScreenWithVm(
 //                                    )
                         bottomSheetScaffoldState.bottomSheetState.currentValue != BottomSheetValue.Expanded
                     }
+                }*/
+
+                val show by remember(rememberModalBottomSheetState.currentValue) {
+                    derivedStateOf {
+//                                    Log.d("[show]",
+//                                        bottomSheetScaffoldState.bottomSheetState.run {
+//                                            """
+//                                                show
+//                                                currentValue:${this.currentValue}
+//                                                isVisible:${this.isVisible}
+//                                                hasExpandedState:${this.hasExpandedState}
+//                                                hasPartiallyExpandedState:${this.hasPartiallyExpandedState}
+//                                            """.trimIndent()
+//                                        }
+//
+//                                    )
+//                        bottomSheetScaffoldState.bottomSheetState.currentValue != BottomSheetValue.Expanded
+                        !rememberModalBottomSheetState.isVisible
+                    }
                 }
                 AnimatedVisibility(
                     show && loggerSupport, modifier = Modifier
@@ -240,7 +270,9 @@ fun ProductionScreenWithVm(
                     FloatingActionButton(
                         onClick = {
                             coroutineScope.launch {
-                                bottomSheetScaffoldState.bottomSheetState.expand()
+//                                bottomSheetScaffoldState.bottomSheetState.expand()
+
+                                rememberModalBottomSheetState.show()
                             }
                         }, contentColor = ZhongGuoSe.向日葵黄.color
                     ) {
@@ -252,11 +284,53 @@ fun ProductionScreenWithVm(
                     Modifier
                         .padding(horizontal = 32.dp, vertical = 120.dp)
                         .fillMaxWidth()
-                        .align(Alignment.BottomCenter), black = true, msg = toast
+                        .align(Alignment.BottomCenter), black = true, msg = toast, content = {
+                        if (it is ToastData.Show) {
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(16.dp))
+                                    .shadow(4.dp)
+                                    .background(中国色.月白.color)
+                                    .padding(16.dp), contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = it.msg,
+                                    modifier = Modifier,
+                                    style = TextStyle.Default.copy(
+                                        color = Color.Red,
+                                        fontSize = 18.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                )
+                            }
+                        }
+                    }
                 ) {
                     vm.clearToast()
                 }
             }
         }
+    }
+//    BottomSheetScaffold(modifier = Modifier.fillMaxSize(),
+//        scaffoldState = bottomSheetScaffoldState,
+//        sheetPeekHeight = 0.dp,
+//        sheetContent = {
+//            histories()
+//        }
+//    ) { _ ->
+//        content()
+//    }
+
+
+
+    ModalBottomSheetLayout(
+        sheetContent = {
+            histories()
+        },
+        modifier =  Modifier.fillMaxSize(),
+        sheetState = rememberModalBottomSheetState,//rememberModalBottomSheetState(ModalBottomSheetValue.Hidden),
+        sheetGesturesEnabled = false
+    ) {
+        content()
     }
 }

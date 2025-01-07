@@ -10,15 +10,16 @@ import com.juul.kable.characteristicOf
 import com.juul.kable.logs.Hex
 import com.juul.kable.logs.Logging
 import com.juul.kable.logs.SystemLogEngine
+import com.yunext.angel.light.ui.vo.BleLog
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.ProducerScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -30,15 +31,22 @@ expect suspend fun Peripheral.requestMtuIfNeed(mtu: Int)
 object BleX {
 
     private const val TAG = "blex"
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+    private const val DEBUG = false
+    private val bleScope =
+        CoroutineScope(SupervisorJob() + Dispatchers.Main + CoroutineExceptionHandler { _, throwable ->
+            d {
+                "CoroutineExceptionHandler throwable:$throwable"
+            }
+        })
     private var autoConnectJob: Job? = null
     private val upChannel: Channel<ByteArray> = Channel()
+    val logChannel: Channel<BleLog> = Channel()
     val downChannel: Channel<BleEvent> = Channel()
 
-    init {
-
-        authResp()
-    }
+//    init {
+//
+//        authResp()
+//    }
 
 
     fun wash(on: Boolean) {
@@ -75,6 +83,7 @@ object BleX {
     }
 
 
+    @Deprecated("JUST TEST")
     private fun authResp() {
         val payload = byteArrayOf(0x00)
         val authResp = Protocol.rtcData(
@@ -132,9 +141,10 @@ object BleX {
     private var _peripheral: Peripheral? = null
 
     @OptIn(ExperimentalStdlibApi::class, ExperimentalApi::class)
-    fun start() {
+    fun start(peiJian: String) {
+        val last = peiJian.takeLast(6)
         autoConnectJob?.cancel()
-        autoConnectJob = scope.launch {
+        autoConnectJob = bleScope.launch {
             launch {
                 val serviceUUID = Protocol.UUID_SERVICE
                 val notifyUUID = Protocol.UUID_CH_NOTIFY
@@ -146,7 +156,13 @@ object BleX {
                 val scanner = Scanner {
                     filters {
                         match {
-                            name = Filter.Name.Prefix(Protocol.PREFIX)
+                            name = if (DEBUG) {
+                                Filter.Name.Prefix(Protocol.PREFIX)
+                            } else {
+                                Filter.Name.Exact(Protocol.PREFIX + last)
+                            }
+
+
                         }
                     }
                     logging {
@@ -171,6 +187,7 @@ object BleX {
                     }
 
                     observationExceptionHandler { cause ->
+                        d("observationExceptionHandler : $cause")
                         // Only propagate failure if we don't see a disconnect within a second.
                         withTimeoutOrNull(1_000L) { state.first { it is State.Disconnected } }
                             ?: throw IllegalStateException(
@@ -274,11 +291,13 @@ object BleX {
                                 d {
                                     ">>>requestMtuIfNeed..."
                                 }
-                                peripheral.requestMtuIfNeed(240)
+                                peripheral.requestMtuIfNeed(Protocol.MTU)
                                 d {
                                     ">>>requestMtuIfNeed!"
                                 }
                                 delay(1000)
+                                val deviceName = todo.name
+                                d("deviceName:$deviceName")
                                 val authData = upAuthBlock(peripheral.name ?: "")
                                 if (authData != null) {
                                     d {
@@ -332,7 +351,7 @@ object BleX {
             }.also {
                 it.invokeOnCompletion {
                     d { "<<<<<<<<<<<<<<<<<*" }
-                    scope.launch(Dispatchers.Main + NonCancellable) {
+                    bleScope.launch(Dispatchers.Main + NonCancellable) {
                         try {
                             _peripheral?.disconnect()
                         } catch (e: Exception) {
@@ -432,6 +451,7 @@ object BleX {
 
 
     private fun d(msg: String) {
+        logChannel.trySend(BleLog(msg))
         Napier.d(tag = TAG) {
             msg
 
@@ -439,12 +459,14 @@ object BleX {
     }
 
     private fun d(msgBlock: () -> String) {
+        logChannel.trySend(BleLog(msgBlock()))
         Napier.d(tag = TAG) {
             msgBlock()
         }
     }
 
     private fun e(msg: String) {
+        logChannel.trySend(BleLog(msg))
         Napier.e(tag = TAG) {
             msg
 
@@ -452,19 +474,10 @@ object BleX {
     }
 
     private fun e(msgBlock: () -> String) {
+        logChannel.trySend(BleLog(msgBlock()))
         Napier.e(tag = TAG) {
             msgBlock()
         }
-    }
-
-    private fun ProducerScope<BleEvent>.msg(msg: String, extra: (String) -> Unit) {
-        extra(msg)
-        trySend(BleEvent.Msg(msg = msg))
-    }
-
-    private fun msg2(msg: String, extra: (String) -> Unit) {
-        extra(msg)
-        downChannel.trySend(BleEvent.Msg(msg = msg))
     }
 }
 

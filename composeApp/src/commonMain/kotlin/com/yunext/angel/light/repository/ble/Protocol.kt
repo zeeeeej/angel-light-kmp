@@ -1,12 +1,13 @@
 package com.yunext.angel.light.repository.ble
 
 import com.yunext.kotlin.kmp.common.util.hdMD5
+import io.github.aakira.napier.Napier
 
 internal object Protocol {
 
     internal const val PREFIX = "light_"
 
-    const val MTU = 512
+    const val MTU = 240
     const val UUID_SERVICE = "616e6765-6c62-6c70-6573-657276696365"
     const val UUID_CH_WRITE = "616e6765-6c62-6c65-7365-6e6463686172"
     const val UUID_CH_NOTIFY = "616e6765-6c62-6c65-6e6f-746964796368"
@@ -16,8 +17,12 @@ internal object Protocol {
     }
 
 
-     fun parseFromBroadcast(name: String): String? {
-        return if (name.startsWith(PREFIX)) {
+    fun parseFromBroadcast(name: String): String? {
+        val check = name.startsWith(PREFIX)
+        Napier.d(tag = "parseFromBroadcast") {
+            "name:[$name]${name.length} PREFIX:[$PREFIX]${PREFIX.length} check:$check"
+        }
+        return if (check) {
             name.substring(PREFIX.length, name.length)
         } else null
     }
@@ -26,7 +31,7 @@ internal object Protocol {
         return hdMD5("#${dest}#$accessKey")?.lowercase()
     }
 
-     fun authenticationWrite(accessKey: String, dest: String): ProtocolData {
+    fun authenticationWrite(accessKey: String, dest: String): ProtocolData {
         val authentication = createAuthentication(accessKey, dest) ?: ""
         println("accessKey:$accessKey ,dest:$dest ,authentication:$authentication <>${authentication.length}")
         check(authentication.isNotEmpty()) {
@@ -36,7 +41,7 @@ internal object Protocol {
         return rtcData(ProtocolCmd.AuthWrite, authentication.hexToByteArray())
     }
 
-     fun rtcData(cmd: ProtocolCmd, payload: ByteArray): ProtocolData {
+    fun rtcData(cmd: ProtocolCmd, payload: ByteArray): ProtocolData {
         val head = HEAD
         val cmdData = cmd.cmd
         val length = payload.size.toByteArray2()

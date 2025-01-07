@@ -4,7 +4,7 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import androidx.activity.ComponentActivity
+import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
@@ -12,9 +12,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.app.ActivityCompat
+import androidx.fragment.app.FragmentActivity
 import com.yunext.angel.light.util.ToastUtil
 
-class MainActivity : ComponentActivity() {
+class MainActivity : FragmentActivity() {
 
     private val launcher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
@@ -28,7 +29,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             App()
 
-            LaunchedEffect(Unit){
+            LaunchedEffect(Unit) {
                 requestPermission()
             }
         }
@@ -51,7 +52,7 @@ class MainActivity : ComponentActivity() {
             if (has) null else Manifest.permission.BLUETOOTH_CONNECT
         } else {
             null
-        }, if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        }, if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) { //12
             val has = ActivityCompat.checkSelfPermission(
                 this,
                 Manifest.permission.BLUETOOTH_SCAN
@@ -60,11 +61,21 @@ class MainActivity : ComponentActivity() {
         } else {
             null
         }, run {
-            val has = ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-            if (has) null else Manifest.permission.ACCESS_FINE_LOCATION
+            if (Build.VERSION.SDK_INT in (Build.VERSION_CODES.Q..<Build.VERSION_CODES.S)) {
+                val has = ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.ACCESS_BACKGROUND_LOCATION
+                ) == PackageManager.PERMISSION_GRANTED
+                if (has) null else Manifest.permission.ACCESS_BACKGROUND_LOCATION
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                null
+            } else {
+                val has = ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) == PackageManager.PERMISSION_GRANTED
+                if (has) null else Manifest.permission.ACCESS_FINE_LOCATION
+            }
         }, run {
             val has = ActivityCompat.checkSelfPermission(
                 this,
@@ -76,8 +87,10 @@ class MainActivity : ComponentActivity() {
 
 
     private fun requestPermission() {
+        Log.d("MainActivity", "launch requestPermission :${Build.VERSION.SDK_INT}")
         val permissions = loadPermissionNoGant()
         if (permissions.isNotEmpty()) {
+            Log.d("MainActivity", "launch requestPermission :$permissions")
             launcher.launch(permissions.toTypedArray())
         }
 

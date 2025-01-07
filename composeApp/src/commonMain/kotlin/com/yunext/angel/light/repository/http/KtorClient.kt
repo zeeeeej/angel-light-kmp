@@ -29,6 +29,7 @@ object KtorClient {
         engine {
 
         }
+
         install(ContentNegotiation) {
             // NoTransformationFoundException
             // https://ktor.io/docs/faq.html#no-transformation-found-exception
@@ -38,9 +39,11 @@ object KtorClient {
                 encodeDefaults = true
             })
         }
+
         install(HttpTimeout) {
             connectTimeoutMillis = timeout
         }
+
         install(Logging) {
             logger = object : Logger {
                 override fun log(message: String) {

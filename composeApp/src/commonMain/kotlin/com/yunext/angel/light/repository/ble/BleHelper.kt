@@ -532,8 +532,8 @@ sealed interface BleEvent {
         }
     }
 
-    data class Msg(val msg: String) : BleEvent
-    data class ParseError(val error: Throwable) : BleEvent
+//    data class Msg(val msg: String) : BleEvent
+//    data class ParseError(val error: Throwable) : BleEvent
 }
 
 val BleEvent.Production.display: String

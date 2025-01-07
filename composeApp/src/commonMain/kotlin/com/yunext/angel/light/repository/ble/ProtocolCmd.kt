@@ -478,6 +478,11 @@ fun parseSetDeviceInfo(payload: ByteArray): SetDeviceInfoNotifyMap {
                     map[SetDeviceInfoKey.Set5] = value
                 }
 
+                SetDeviceInfoKey.Set21.key -> {
+                    val value = data[1].toInt() == 0
+                    map[SetDeviceInfoKey.Set21] = value
+                }
+
                 else -> throw RuntimeException("todo")
             }
         }

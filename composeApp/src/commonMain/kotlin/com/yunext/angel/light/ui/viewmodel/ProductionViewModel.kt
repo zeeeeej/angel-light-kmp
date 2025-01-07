@@ -16,6 +16,7 @@ import com.yunext.angel.light.repository.AppRepo
 import com.yunext.angel.light.repository.ble.BleX
 import com.yunext.angel.light.repository.ble.SetDeviceInfoKey
 import com.yunext.angel.light.repository.ble.TslPropertyKey
+import com.yunext.angel.light.repository.ble.currentTime
 import com.yunext.angel.light.repository.ble.text
 import com.yunext.angel.light.repository.ble.unit
 import com.yunext.angel.light.repository.ble.value
@@ -44,6 +45,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
@@ -208,6 +210,11 @@ class ProductionViewModel(
         bleLogs.value = listOf(BleLog(log)) + old
     }
 
+    private fun addLog(log: BleLog) {
+        val old = bleLogs.value
+        bleLogs.value = listOf(log) + old
+    }
+
     private fun clearLog() {
         bleLogs.value = emptyList()
     }
@@ -264,93 +271,115 @@ class ProductionViewModel(
 
     init {
         viewModelScope.launch {
-            BleX.downChannel.receiveAsFlow().collect { bleEvent ->
-                when (bleEvent) {
-                    is BleEvent.Authed -> {
-                        connected.value = true
-                        connectEffect.value = effectSuccess()
-                    }
 
-                    BleEvent.Connected -> {
+//            launch {
+//                while (isActive){
+//                    delay(1000)
+//                    addLog("=>${currentTime()}")
+//                }
+//            }
 
-                    }
-
-                    is BleEvent.DeviceInfo -> {
-
-                        val map = bleEvent.properties
-                        val isOpen = map[TslPropertyKey.IsOpen]
-                        if (isOpen != null) {
-                            power.value = isOpen as Boolean
-                            powerChannel?.trySend(ActionResult.Success(isOpen as Boolean))
-
-
-                        }
-                        val isWash = map[TslPropertyKey.WashState]
-                        if (isWash != null) {
-                            wash.value = isWash as Boolean
-                            washChannel?.trySend(ActionResult.Success(isWash))
+            launch {
+                BleX.downChannel.receiveAsFlow().collect { bleEvent ->
+                    addLog(bleEvent.toString())
+                    when (bleEvent) {
+                        is BleEvent.Authed -> {
+                            connected.value = true
+                            connectEffect.value = effectSuccess()
                         }
 
+                        BleEvent.Connected -> {
 
-                        if (map.isNotEmpty()) {
-                            val oldList = properties.value
-                            val pList = map.map { (k, v) ->
-                                PropertyVo(
-                                    key = k,
-                                    unit = k.unit,
-                                    value = k.value(v) ?: "",
-                                    name = k.text
-                                )
+                        }
+
+                        is BleEvent.DeviceInfo -> {
+
+                            val map = bleEvent.properties
+                            val isOpen = map[TslPropertyKey.IsOpen]
+                            if (isOpen != null) {
+                                power.value = isOpen as Boolean
+                                powerChannel?.trySend(ActionResult.Success(isOpen as Boolean))
+
+
                             }
-                            val newList = oldList.filter { t1 ->
-                                !pList.any { t2 ->
-                                    t2.key == t1.key
+                            val isWash = map[TslPropertyKey.WashState]
+                            if (isWash != null) {
+                                wash.value = isWash as Boolean
+                                washChannel?.trySend(ActionResult.Success(isWash))
+                            }
+
+
+                            if (map.isNotEmpty()) {
+                                val oldList = properties.value
+                                val pList = map.map { (k, v) ->
+                                    PropertyVo(
+                                        key = k,
+                                        unit = k.unit,
+                                        value = k.value(v) ?: "",
+                                        name = k.text
+                                    )
                                 }
-                            } + pList
-                            properties.value = newList
+                                val newList = oldList.filter { t1 ->
+                                    !pList.any { t2 ->
+                                        t2.key == t1.key
+                                    }
+                                } + pList
+                                properties.value = newList
+                            }
+
+                            doFirstAutoProduction()
+
+
                         }
 
-                        doFirstAutoProduction()
-
-
-                    }
-
-                    is BleEvent.Disconnect -> {
-                        connectEffect.value = effectFail(throwableOf { "disconnect" })
-                        connected.value = false
-                        //
-                        clearJobs()
+                        is BleEvent.Disconnect -> {
+                            connectEffect.value = effectFail(throwableOf { "disconnect" })
+                            connected.value = false
+                            //
+                            clearJobs()
 //                                if (it.isActiveDisConnected){
 //                        reAutoConnect() // TODO
 //                                }
-                    }
-
-                    is BleEvent.Error -> {
-                        connectEffect.value = effectFail(throwableOf { bleEvent.msg })
-                        connected.value = false
-                        clearJobs()
-//                        reAutoConnect()// TODO
-                    }
-
-                    is BleEvent.Msg -> {}
-                    is BleEvent.Notify -> {}
-                    is BleEvent.Version -> {}
-                    is BleEvent.Production -> {
-                        productionChannel?.trySend(ActionResult.Success((bleEvent)))
-                    }
-
-                    is BleEvent.SetDeviceResult -> {
-                        // ...
-                        val properties = bleEvent.properties
-                        val result = properties[SetDeviceInfoKey.Set21]
-                        if (result == true) {
-                            resetChannel?.trySend(ActionResult.Success(true))
                         }
-                    }
 
-                    else -> {}
+                        is BleEvent.Error -> {
+                            connectEffect.value = effectFail(throwableOf { bleEvent.msg })
+                            connected.value = false
+                            clearJobs()
+//                        reAutoConnect()// TODO
+                        }
+
+//                        is BleEvent.Msg -> {
+//                            addLog(bleEvent.msg)
+//                        }
+
+                        is BleEvent.Notify -> {}
+                        is BleEvent.Version -> {}
+                        is BleEvent.Production -> {
+                            productionChannel?.trySend(ActionResult.Success((bleEvent)))
+                        }
+
+                        is BleEvent.SetDeviceResult -> {
+                            // ...
+                            val properties = bleEvent.properties
+                            val result = properties[SetDeviceInfoKey.Set21]
+                            Napier.d(tag = "blex") { "result:$result" }
+                            if (result == true) {
+                                resetChannel?.trySend(ActionResult.Success(true))
+                            }
+                        }
+
+                        else -> {}
+                    }
                 }
             }
+
+            launch {
+                BleX.logChannel.receiveAsFlow().collect { bleEvent ->
+                    addLog(bleEvent)
+                }
+            }
+
         }
 
     }
@@ -362,7 +391,8 @@ class ProductionViewModel(
 
     private fun autoConnect() {
         connectEffect.value = effectProgress()
-        BleX.start()
+
+        BleX.start(sr.peiJianCode)
     }
 
     fun stop() {
@@ -731,8 +761,6 @@ class ProductionViewModel(
 
                     is HDResult.Success -> {
                         commitEffect.value = effectSuccess()
-                        reset()
-                        delay(1500)
                         true
                     }
                 }

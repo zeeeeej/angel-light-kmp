@@ -32,10 +32,21 @@ kotlin {
     }
 
     sourceSets {
-
-        iosMain.dependencies {
+        iosX64Main.dependencies {
             implementation(libs.ktor.client.darwin)
+            implementation(libs.qr.kit.iosx64)
         }
+
+        iosArm64Main.dependencies {
+            implementation(libs.ktor.client.darwin)
+            implementation(libs.qr.kit.iosarm64)
+        }
+
+        iosSimulatorArm64Main.dependencies {
+            implementation(libs.ktor.client.darwin)
+            implementation(libs.qr.kit.iossimulatorarm64)
+        }
+
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
@@ -45,6 +56,7 @@ kotlin {
             implementation(libs.koin.androidx.compose)
 
             implementation(libs.splashscreen)
+            implementation(libs.bundles.mlkit)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -68,8 +80,8 @@ kotlin {
             implementation(libs.bundles.yunext)
             implementation(libs.bundles.zeeeeej)
 
-            implementation(libs.coil3)
-            implementation(libs.qr.kit)
+            implementation(libs.bundles.coil3)
+//            implementation(libs.qr.kit)
             implementation(libs.napier)
 
             implementation(libs.bundles.ktor.client)

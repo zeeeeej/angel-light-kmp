@@ -47,6 +47,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil3.compose.AsyncImage
 import color
 import com.yunext.angel.light.BuildConfigX
 import com.yunext.angel.light.BuildConfigX.IGNORE_CHECK_CODE
@@ -61,11 +62,13 @@ import com.yunext.angel.light.resources.icon_log_out
 import com.yunext.angel.light.ui.common.clickablePure
 
 import com.yunext.angel.light.domain.poly.ProductType
+import com.yunext.angel.light.resources.icon_scan
 import com.yunext.angel.light.ui.vo.defaultIcon
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.vectorResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 data class ProductTabVo(val text: String)
@@ -303,8 +306,8 @@ private fun ProductContent(
                         )
                         Spacer(Modifier.height(16.dp))
                         Image(
-                            painterResource(Res.drawable.icon_log_out), // todo scan
-                            contentDescription = "Vector Icon",
+                            imageVector = vectorResource(Res.drawable.icon_scan),
+                            contentDescription = "网络图片",
                             modifier = Modifier
                                 .size(96.dp)
                                 .clickablePure {
@@ -314,8 +317,9 @@ private fun ProductContent(
                                             ProductType.Device -> ProductModel.EmptyDevice
                                         }, p, type
                                     )
-                                }
+                                },
                         )
+
                     }
                 }
             }
@@ -418,10 +422,10 @@ private fun TabItem(
         modifier
             .width(72.dp)
             .height(32.dp)
+            .clip(RoundedCornerShape(18.dp))
             .run {
                 if (selected) {
                     this
-                        .clip(RoundedCornerShape(18.dp))
                         .background(Color.White)
                 } else this
             }

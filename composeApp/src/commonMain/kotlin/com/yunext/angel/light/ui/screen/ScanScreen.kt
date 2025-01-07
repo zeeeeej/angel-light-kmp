@@ -1,6 +1,5 @@
 package com.yunext.angel.light.ui.screen
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -13,7 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -48,8 +46,6 @@ import com.yunext.angel.light.ui.viewmodel.ScanViewModel
 import com.yunext.angel.light.ui.vo.Packet
 import com.yunext.kotlin.kmp.common.domain.Effect
 import io.github.aakira.napier.Napier
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 @Composable
 fun ScanScreen(
@@ -86,7 +82,7 @@ fun ScanScreen(
                     color = Color.Black
                 )
             }) {
-        if (state.effect !is Effect.Success) {
+//        if (state.effect !is Effect.Success) {
             ScanComponent(Modifier.fillMaxSize(),
                 //status = { if (state.effect is Effect.Progress<*, *> /*|| result == null*/) ScanStatus.Checking else ScanStatus.Idle },
                 onScanResult = { result ->
@@ -95,7 +91,7 @@ fun ScanScreen(
                     errorMsg = it
                 }, type = packet.type, onBack = onBack
             )
-        }
+//        }
 
         LaunchedEffect(state.effect) {
             Napier.e { "ScanScreen LaunchedEffect ${state.effect}" }

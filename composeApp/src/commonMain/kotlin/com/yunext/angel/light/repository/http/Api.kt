@@ -41,7 +41,7 @@ interface ApiService {
     suspend fun check(
         @Header(TOKEN) token: String,
         @Query("code") code: String,
-        @Field("type") type: String,
+        @Query("type") type: String,
     ): HttpResp<CheckResp>
 
     @POST(Finish)
@@ -54,14 +54,14 @@ interface ApiService {
 }
 
 
-
 class Api {
 
     companion object {
         private const val HOST = BuildConfigX.HOST
         fun img(id: String) = "$HOST$IMG_PATH$id"
         val apiService by lazy {
-            KtorClient.httpClient(HOST).create<ApiService>()
+            //KtorClient.httpClient(HOST).create<ApiService>()
+            KtorClient.httpClient(HOST).createApiService()
         }
     }
 }

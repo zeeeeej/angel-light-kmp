@@ -11,6 +11,10 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import coil3.ImageLoader
+import coil3.compose.setSingletonImageLoaderFactory
+import coil3.request.crossfade
+import coil3.svg.SvgDecoder
 import com.yunext.angel.light.di.koinViewModel
 import com.yunext.angel.light.domain.isEmpty
 import com.yunext.angel.light.ui.screen.LoginScreenWithVm
@@ -21,10 +25,21 @@ import com.yunext.angel.light.ui.viewmodel.AppViewModel
 import com.yunext.kotlin.kmp.common.domain.Effect
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
+
 @Composable
 @Preview
 fun App() {
     MaterialTheme {
+        // for coil3
+        // https://coil-kt.github.io/coil/getting_started/
+        setSingletonImageLoaderFactory { ctx ->
+            ImageLoader(ctx).newBuilder()
+                .crossfade(true)
+                .components {
+                    add(SvgDecoder.Factory())
+                }
+                .build()
+        }
 
         val viewModel = koinViewModel<AppViewModel>()
         val state by viewModel.state.collectAsState(AppState())
