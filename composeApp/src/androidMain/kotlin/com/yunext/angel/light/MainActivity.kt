@@ -61,13 +61,18 @@ class MainActivity : FragmentActivity() {
         } else {
             null
         }, run {
-            if (Build.VERSION.SDK_INT in (Build.VERSION_CODES.Q..<Build.VERSION_CODES.S)) {
+            /*if (Build.VERSION.SDK_INT in (Build.VERSION_CODES.Q..<Build.VERSION_CODES.S)) {
+                // 10 - 12
                 val has = ActivityCompat.checkSelfPermission(
                     this,
                     Manifest.permission.ACCESS_BACKGROUND_LOCATION
                 ) == PackageManager.PERMISSION_GRANTED
+                Log.d(
+                    "MainActivity",
+                    "launch requestPermission has ACCESS_BACKGROUND_LOCATION $has "
+                )
                 if (has) null else Manifest.permission.ACCESS_BACKGROUND_LOCATION
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            } else*/ if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {//12
                 null
             } else {
                 val has = ActivityCompat.checkSelfPermission(
@@ -83,11 +88,12 @@ class MainActivity : FragmentActivity() {
             ) == PackageManager.PERMISSION_GRANTED
             if (has) null else Manifest.permission.CAMERA
         }
-    )
+    ).also {
+        Log.d("MainActivity", "launch requestPermission :${Build.VERSION.SDK_INT} list:$it")
+    }
 
 
     private fun requestPermission() {
-        Log.d("MainActivity", "launch requestPermission :${Build.VERSION.SDK_INT}")
         val permissions = loadPermissionNoGant()
         if (permissions.isNotEmpty()) {
             Log.d("MainActivity", "launch requestPermission :$permissions")
