@@ -86,12 +86,88 @@ object BleX {
 
     @Deprecated("JUST TEST")
     private fun authResp() {
-        val payload = byteArrayOf(0x00)
-        val authResp = Protocol.rtcData(
-            ProtocolCmd.AuthNotify, payload
+//        val payload = byteArrayOf(0x00)
+//        val authResp = Protocol.rtcData(
+//            ProtocolCmd.AuthNotify, payload
+//        )
+//        @OptIn(ExperimentalStdlibApi::class)
+//        d("authResp:${authResp.toByteArray().toHexString()}")
+
+        // 开关机
+        @OptIn(ExperimentalStdlibApi::class)
+        d(
+            "开关机:${
+                Protocol.rtcData(
+                    ProtocolCmd.DeviceInfoUpdateNotify, byteArrayOf(0x02, 0x02, 0x00)
+                ).toByteArray().toHexString()
+            }"
         )
         @OptIn(ExperimentalStdlibApi::class)
-        d("authResp:${authResp.toByteArray().toHexString()}")
+        d(
+            "开机结果:${
+                Protocol.rtcData(
+                    ProtocolCmd.DeviceInfoSelectNotify, byteArrayOf(0x03, 0x06, 0x00, 0x00)
+                ).toByteArray().toHexString()
+            }"
+        )
+        @OptIn(ExperimentalStdlibApi::class)
+        d(
+            "关机结果:${
+                Protocol.rtcData(
+                    ProtocolCmd.DeviceInfoSelectNotify, byteArrayOf(0x03, 0x06, 0x00, 0x01)
+                ).toByteArray().toHexString()
+            }"
+        )
+
+        @OptIn(ExperimentalStdlibApi::class)
+        d(
+            "冲洗:${
+                Protocol.rtcData(
+                    ProtocolCmd.DeviceInfoUpdateNotify, byteArrayOf(0x02, 0x03, 0x00)
+                ).toByteArray().toHexString()
+            }"
+        )
+        @OptIn(ExperimentalStdlibApi::class)
+        d(
+            "冲洗开结果:${
+                Protocol.rtcData(
+                    ProtocolCmd.DeviceInfoSelectNotify, byteArrayOf(0x03, 0x06, 0x00, 0b100)
+                ).toByteArray().toHexString()
+            }"
+        )
+        @OptIn(ExperimentalStdlibApi::class)
+        d(
+            "冲洗关结果:${
+                Protocol.rtcData(
+                    ProtocolCmd.DeviceInfoSelectNotify, byteArrayOf(0x03, 0x06, 0x00, 0b000)
+                ).toByteArray().toHexString()
+            }"
+        )
+
+
+        val code = "123456".encodeToByteArray()
+        val peiJian = "792811".encodeToByteArray()
+        val py = byteArrayOf(0x01, 0x02, 0x03, 0x04) +
+                byteArrayOf(code.size.toByte()) + code +
+                byteArrayOf(peiJian.size.toByte()) + peiJian
+        @OptIn(ExperimentalStdlibApi::class)
+        d(
+            "产测:${
+                Protocol.rtcData(
+                    ProtocolCmd.ProductionWriteNotify,
+                    py
+                ).toByteArray().toHexString()
+            }"
+        )
+
+        @OptIn(ExperimentalStdlibApi::class)
+        d(
+            "恢复出厂:${
+                Protocol.rtcData(
+                    ProtocolCmd.DeviceInfoUpdateNotify, byteArrayOf(0x02, 0x21, 0x00)
+                ).toByteArray().toHexString()
+            }"
+        )
     }
 
     fun production() {

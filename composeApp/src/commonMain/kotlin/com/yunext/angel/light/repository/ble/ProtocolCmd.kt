@@ -338,16 +338,24 @@ val DeviceInfoSelectNotifyMap.display: String
 //<editor-fold desc="产测回复0xFE">
 fun parseProduction(payload: ByteArray): BleEvent.Production {
     return try {
+        // 5aa5fe00120203000506010203040506060102030405064f
+        @OptIn(ExperimentalStdlibApi::class)
+        println("parseProduction payload:${payload.toHexString()}")
+        // 02030005 06010203040506 06010203040506
         val timestamp = payload.sliceArray(0..3).toInt()
         var pos = 4
         val modeLength = payload[pos].toInt()
+        println("parseProduction modeLength:$modeLength")
         pos += 1
         val mode = payload.sliceArray(pos..<pos + modeLength).decodeToString()
+        println("parseProduction mode:$mode")
         pos += modeLength
         val codeLength = payload[pos].toInt()
+        println("parseProduction codeLength:$codeLength")
         pos += 1
         val code = payload.sliceArray(pos..<pos + codeLength)
             .decodeToString()
+        println("parseProduction code:$code")
         BleEvent.Production(timestamp = timestamp.toLong(), code = code, model = mode)
     } catch (e: Throwable) {
         parseProductionV1(payload)
@@ -451,8 +459,9 @@ fun parseSetDeviceInfo(payload: ByteArray): SetDeviceInfoNotifyMap {
         d("[parseSetDeviceInfo]data:${data.display}")
         if (data.isNotEmpty()) {
             val no = data[0]
+            val key = data[1]
             d("[parseSetDeviceInfo]       no:${no.toHexString()},value:${data[1].toHexString()}")
-            when (no) {
+            when (key) {
                 SetDeviceInfoKey.Set1.key -> {
                     val value = data[1].toInt() == 0
                     map[SetDeviceInfoKey.Set1] = value
@@ -479,7 +488,7 @@ fun parseSetDeviceInfo(payload: ByteArray): SetDeviceInfoNotifyMap {
                 }
 
                 SetDeviceInfoKey.Set21.key -> {
-                    val value = data[1].toInt() == 0
+                    val value = true//data[1].toInt() == 0
                     map[SetDeviceInfoKey.Set21] = value
                 }
 
