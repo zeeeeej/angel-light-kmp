@@ -43,6 +43,7 @@ import com.yunext.angel.light.di.koinViewModelP2
 import com.yunext.angel.light.ui.compoent.CancelableLoadingComponent
 import com.yunext.angel.light.ui.compoent.HistoriesInfo
 import com.yunext.angel.light.ui.compoent.LoadingComponent
+import com.yunext.angel.light.ui.compoent.PlatformBackGestureHandler
 import com.yunext.angel.light.ui.compoent.Toast
 import com.yunext.angel.light.ui.compoent.ToastData
 import com.yunext.angel.light.ui.viewmodel.ProductionState
@@ -129,97 +130,98 @@ fun ProductionScreenWithVm(
     }
 
     val content: @Composable () -> Unit = {
-        Scaffold { innerPadding ->
-            Box(
-                Modifier
-                    .fillMaxSize()
-                    .padding(0.dp)
-            ) {
+        PlatformBackGestureHandler(true, onBack = onBack) {
+            Scaffold { innerPadding ->
+                Box(
+                    Modifier
+                        .fillMaxSize()
+                        .padding(0.dp)
+                ) {
 
-                LaunchedEffect(state.commitEffect) {
-                    if (state.commitEffect is Effect.Success<*, *>) {
-                        toScan(packet)
-                    }
-                }
-                ProductionScreen(Modifier.padding(innerPadding),
-                    scanResult = scanResult,
-                    productModel = packet.productModel,
-                    product = packet.product,
-                    state = state,
-                    onBack = {
-                        onBack()//toScan(packet)
-                    },
-                    onCommit = {
-                        coroutineScope.launch {
-                            vm.reset()
+                    LaunchedEffect(state.commitEffect) {
+                        if (state.commitEffect is Effect.Success<*, *>) {
+                            toScan(packet)
                         }
-                    }, onPower = {
-                        vm.power(!state.power)
-                    }, onWash = {
-                        vm.wash(!state.wash)
-                    }, onProduction = {
-                        vm.production()
-                    }, onScan = {
-                        toScan(packet)
-                    }, onConnect = {
-                        vm.connect()
-                    }, onDebug = {
-                        loggerSupport = !loggerSupport
-                    })
-
-                val loadingConnect: Boolean by remember(state.connectEffect) {
-                    derivedStateOf {
-                        state.connectEffect.doing
                     }
-                }
-                val loadingCommit: Boolean by remember(state.commitEffect) {
-                    derivedStateOf {
-                        state.commitEffect.doing
-                    }
-                }
-                if (loadingConnect) {
-                    Dialog(
-                        onDismissRequest = {
-
+                    ProductionScreen(Modifier.padding(innerPadding),
+                        scanResult = scanResult,
+                        productModel = packet.productModel,
+                        product = packet.product,
+                        state = state,
+                        onBack = {
+                            onBack()//toScan(packet)
                         },
-                        properties = DialogProperties(
-                            dismissOnBackPress = false,
-                            dismissOnClickOutside = false
-                        )
-                    ) {
-                        Box(modifier = Modifier.fillMaxSize()) {
-                            CancelableLoadingComponent(
-                                modifier = Modifier.align(
-                                    Alignment.Center
-                                )
-                            ) {
-                                vm.stop()
+                        onCommit = {
+                            coroutineScope.launch {
+                                vm.reset()
                             }
+                        }, onPower = {
+                            vm.power(!state.power)
+                        }, onWash = {
+                            vm.wash(!state.wash)
+                        }, onProduction = {
+                            vm.production()
+                        }, onScan = {
+                            toScan(packet)
+                        }, onConnect = {
+                            vm.connect()
+                        }, onDebug = {
+                            loggerSupport = !loggerSupport
+                        })
+
+                    val loadingConnect: Boolean by remember(state.connectEffect) {
+                        derivedStateOf {
+                            state.connectEffect.doing
+                        }
+                    }
+                    val loadingCommit: Boolean by remember(state.commitEffect) {
+                        derivedStateOf {
+                            state.commitEffect.doing
+                        }
+                    }
+                    if (loadingConnect) {
+                        Dialog(
+                            onDismissRequest = {
+
+                            },
+                            properties = DialogProperties(
+                                dismissOnBackPress = false,
+                                dismissOnClickOutside = false
+                            )
+                        ) {
+                            Box(modifier = Modifier.fillMaxSize()) {
+                                CancelableLoadingComponent(
+                                    modifier = Modifier.align(
+                                        Alignment.Center
+                                    )
+                                ) {
+                                    vm.stop()
+                                }
+                            }
+
                         }
 
                     }
 
-                }
+                    if (loadingCommit) {
+                        Dialog(
+                            onDismissRequest = {
 
-                if (loadingCommit) {
-                    Dialog(
-                        onDismissRequest = {
+                            },
+                            properties = DialogProperties(
+                                dismissOnBackPress = false,
+                                dismissOnClickOutside = false
+                            )
+                        ) {
+                            Box(modifier = Modifier.fillMaxSize()) {
+                                LoadingComponent(modifier = Modifier.align(Alignment.Center))
+                            }
 
-                        },
-                        properties = DialogProperties(
-                            dismissOnBackPress = false,
-                            dismissOnClickOutside = false
-                        )
-                    ) {
-                        Box(modifier = Modifier.fillMaxSize()) {
-                            LoadingComponent(modifier = Modifier.align(Alignment.Center))
                         }
 
                     }
 
-                }
-
-                /*val show by remember(bottomSheetScaffoldState.bottomSheetState) {
+                    /*val show by remember(bottomSheetScaffoldState.bottomSheetState) {
                     derivedStateOf {
 //                                    Log.d("[show]",
 //                                        bottomSheetScaffoldState.bottomSheetState.run {
@@ -237,8 +239,8 @@ fun ProductionScreenWithVm(
                     }
                 }*/
 
-                val show by remember(rememberModalBottomSheetState.currentValue) {
-                    derivedStateOf {
+                    val show by remember(rememberModalBottomSheetState.currentValue) {
+                        derivedStateOf {
 //                                    Log.d("[show]",
 //                                        bottomSheetScaffoldState.bottomSheetState.run {
 //                                            """
@@ -252,55 +254,56 @@ fun ProductionScreenWithVm(
 //
 //                                    )
 //                        bottomSheetScaffoldState.bottomSheetState.currentValue != BottomSheetValue.Expanded
-                        !rememberModalBottomSheetState.isVisible
-                    }
-                }
-                AnimatedVisibility(
-                    show && loggerSupport, modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(vertical = 64.dp, horizontal = 32.dp)
-                ) {
-                    FloatingActionButton(
-                        onClick = {
-                            coroutineScope.launch {
-//                                bottomSheetScaffoldState.bottomSheetState.expand()
-
-                                rememberModalBottomSheetState.show()
-                            }
-                        }, contentColor = ZhongGuoSe.向日葵黄.color
-                    ) {
-                        Image(Icons.Default.DateRange, null)
-                    }
-                }
-
-                Toast(
-                    Modifier
-                        .padding(horizontal = 32.dp, vertical = 120.dp)
-                        .fillMaxWidth()
-                        .align(Alignment.BottomCenter), black = true, msg = toast, content = {
-                        if (it is ToastData.Show) {
-                            Box(
-                                modifier = Modifier
-                                    .padding(10.dp)
-                                    .clip(RoundedCornerShape(16.dp))
-                                    .shadow(8.dp)
-                                    .background(Color.White)
-                                    .padding(16.dp), contentAlignment = Alignment.Center
-                            ) {
-                                Text(
-                                    text = it.msg,
-                                    modifier = Modifier,
-                                    style = TextStyle.Default.copy(
-                                        color = 中国色.大红.color,
-                                        fontSize = 18.sp,
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                )
-                            }
+                            !rememberModalBottomSheetState.isVisible
                         }
                     }
-                ) {
-                    vm.clearToast()
+                    AnimatedVisibility(
+                        show && loggerSupport, modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .padding(vertical = 64.dp, horizontal = 32.dp)
+                    ) {
+                        FloatingActionButton(
+                            onClick = {
+                                coroutineScope.launch {
+//                                bottomSheetScaffoldState.bottomSheetState.expand()
+
+                                    rememberModalBottomSheetState.show()
+                                }
+                            }, contentColor = ZhongGuoSe.向日葵黄.color
+                        ) {
+                            Image(Icons.Default.DateRange, null)
+                        }
+                    }
+
+                    Toast(
+                        Modifier
+                            .padding(horizontal = 32.dp, vertical = 120.dp)
+                            .fillMaxWidth()
+                            .align(Alignment.BottomCenter), black = true, msg = toast, content = {
+                            if (it is ToastData.Show) {
+                                Box(
+                                    modifier = Modifier
+                                        .padding(10.dp)
+                                        .clip(RoundedCornerShape(16.dp))
+                                        .shadow(8.dp)
+                                        .background(Color.White)
+                                        .padding(16.dp), contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = it.msg,
+                                        modifier = Modifier,
+                                        style = TextStyle.Default.copy(
+                                            color = 中国色.大红.color,
+                                            fontSize = 18.sp,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                    )
+                                }
+                            }
+                        }
+                    ) {
+                        vm.clearToast()
+                    }
                 }
             }
         }

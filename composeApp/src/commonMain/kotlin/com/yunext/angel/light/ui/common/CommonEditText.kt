@@ -53,8 +53,8 @@ fun CommonEditText(
 //            unfocusedIndicatorColor = Color.Transparent
 //        )
         colors = TextFieldDefaults.textFieldColors(
-//            focusedContainerColor = Color.Transparent, // todo
-//            unfocusedContainerColor = Color.Transparent, // todo
+//            focusedContainerColor = Color.Transparent, //
+//            unfocusedContainerColor = Color.Transparent, //
             backgroundColor = Color.Transparent,
             disabledIndicatorColor = Color.Transparent,
             focusedIndicatorColor = Color.Transparent,

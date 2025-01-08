@@ -16,7 +16,6 @@ import com.yunext.angel.light.repository.AppRepo
 import com.yunext.angel.light.repository.ble.BleX
 import com.yunext.angel.light.repository.ble.SetDeviceInfoKey
 import com.yunext.angel.light.repository.ble.TslPropertyKey
-import com.yunext.angel.light.repository.ble.currentTime
 import com.yunext.angel.light.repository.ble.text
 import com.yunext.angel.light.repository.ble.unit
 import com.yunext.angel.light.repository.ble.value
@@ -45,7 +44,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
@@ -157,7 +155,6 @@ class ProductionViewModel(
 
     private var first = true
     private val auto = false
-    private var productionRetry = 0
 
     private var resetChannel: Channel<ActionResult<Boolean, String>>? = Channel()
     private var washChannel: Channel<ActionResult<Boolean, String>>? = Channel()

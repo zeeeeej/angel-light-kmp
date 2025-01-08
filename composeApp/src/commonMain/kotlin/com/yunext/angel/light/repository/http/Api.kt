@@ -1,7 +1,6 @@
 package com.yunext.angel.light.repository.http
 
 import com.yunext.angel.light.BuildConfigX
-import com.yunext.angel.light.domain.FinishReq
 import com.yunext.angel.light.repository.http.resp.CheckResp
 import com.yunext.angel.light.repository.http.resp.UserResp
 import de.jensklingenberg.ktorfit.http.Body
@@ -12,7 +11,6 @@ import de.jensklingenberg.ktorfit.http.Header
 import de.jensklingenberg.ktorfit.http.Headers
 import de.jensklingenberg.ktorfit.http.POST
 import de.jensklingenberg.ktorfit.http.Query
-import io.ktor.client.request.forms.MultiPartFormDataContent
 
 // paths
 private const val Login = "api/app/account/login"

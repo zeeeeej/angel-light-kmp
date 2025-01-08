@@ -59,8 +59,12 @@ ktor = "3.0.0"
 flippable = "1.5.4"
 kable = "0.35.0"
 mlkitCameraCore = "1.0.3"
+# https://github.com/kashif-e/voyant //fix ios swip back
+voyant-navigation-compose = "0.0.8"
+
 
 [libraries]
+voyant-navigation-compose = { group = "io.github.kashif-mehmood-km", name = "voyant-navigation-compose", version.ref = "voyant-navigation-compose" }
 mlkit-camera-core = { group = "com.github.jenly1314.MLKit", name = "mlkit-camera-core", version.ref = "mlkitCameraCore" }
 mlkit-barcode-scanning = { group = "com.github.jenly1314.MLKit", name = "mlkit-barcode-scanning", version.ref = "mlkitCameraCore" }
 flippable = { module = "com.wajahatkarim:flippable", version.ref = "flippable" }
