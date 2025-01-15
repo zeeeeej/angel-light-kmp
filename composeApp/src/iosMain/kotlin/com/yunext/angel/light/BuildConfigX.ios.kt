@@ -10,7 +10,15 @@ actual class KBuildConfig {
     actual val VERSION_CODE: Int
         get() = (NSBundle.mainBundle.infoDictionary?.get("CFBundleVersion") as? String)?.toInt()
             ?: 17
+
+    /**
+     * HOST_HD_DEV
+     * HOST_ANGEL_DEV
+     * HOST_ANGEL
+     */
     actual val HOST: String
-        get() = NSBundle.mainBundle.infoDictionary?.get("HOST") as? String
-            ?: ""//ProductFlavor.AngelDev.host
+        get() = NSBundle.mainBundle.infoDictionary?.get("HOST_HD_DEV") as? String
+            ?: ""
+
+
 }
