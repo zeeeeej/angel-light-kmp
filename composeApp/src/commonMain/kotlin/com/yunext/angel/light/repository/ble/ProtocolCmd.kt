@@ -1,5 +1,7 @@
 package com.yunext.angel.light.repository.ble
 
+import io.github.aakira.napier.Napier
+
 enum class ProtocolCmd {
     AuthWrite, AuthNotify, DeviceInfoSelectWrite, DeviceInfoSelectNotify, DeviceInfoUpdateWrite, DeviceInfoUpdateNotify, TimestampWrite, TimestampNotify, VersionNotify, ProductionWriteNotify, HistorySelectWrite, HistoryStartNotify, HistoryNotify, HistoryCompleteNotify, HistorySetNotify, HistoryClearNotify, ;
 }
@@ -458,41 +460,47 @@ fun parseSetDeviceInfo(payload: ByteArray): SetDeviceInfoNotifyMap {
         // 添加到结果
         d("[parseSetDeviceInfo]data:${data.display}")
         if (data.isNotEmpty()) {
-            val no = data[0]
-            val key = data[1]
-            d("[parseSetDeviceInfo]       no:${no.toHexString()},value:${data[1].toHexString()}")
-            when (key) {
+            val k = data[0]
+            val v = data[1]
+            d("[parseSetDeviceInfo]       no:${k.toHexString()},v:${data[1].toHexString()}")
+            when (k) {
                 SetDeviceInfoKey.Set1.key -> {
-                    val value = data[1].toInt() == 0
+                    val value = v.toInt() == 0
                     map[SetDeviceInfoKey.Set1] = value
                 }
 
                 SetDeviceInfoKey.Set2.key -> {
-                    val value = data[1].toInt() == 0
+                    Napier.d { "[parseSetDeviceInfo] 解析到：${ SetDeviceInfoKey.Set2.text}${data.toHexString()}" }
+                    val value = v.toInt() == 0
                     map[SetDeviceInfoKey.Set2] = value
                 }
 
                 SetDeviceInfoKey.Set3.key -> {
-                    val value = data[1].toInt() == 0
+                    Napier.d { "[parseSetDeviceInfo] 解析到：${ SetDeviceInfoKey.Set3.text}${data.toHexString()}" }
+                    val value = v.toInt() == 0
                     map[SetDeviceInfoKey.Set3] = value
                 }
 
                 SetDeviceInfoKey.Set4.key -> {
-                    val value = data[1].toInt() == 0
+                    val value = v.toInt() == 0
                     map[SetDeviceInfoKey.Set4] = value
                 }
 
                 SetDeviceInfoKey.Set5.key -> {
-                    val value = data[1].toInt() == 0
+                    val value = v.toInt() == 0
                     map[SetDeviceInfoKey.Set5] = value
                 }
 
                 SetDeviceInfoKey.Set21.key -> {
-                    val value = true//data[1].toInt() == 0
+                    Napier.d { "[parseSetDeviceInfo] 解析到：${ SetDeviceInfoKey.Set21.text}${data.toHexString()}" }
+                    val value = true//v.toInt() == 0
                     map[SetDeviceInfoKey.Set21] = value
                 }
 
-                else -> throw RuntimeException("todo")
+                else -> {
+                    Napier.d { "[parseSetDeviceInfo] 解析到其他${data.toHexString()}" }
+                    throw RuntimeException("todo")
+                }
             }
         }
         // 更新位置

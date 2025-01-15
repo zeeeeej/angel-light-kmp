@@ -28,3 +28,4 @@ actual fun toggleFlashlight(on: Boolean) {
         Napier.w { "toggleFlashlight error : $e" }
     }
 }
+

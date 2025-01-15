@@ -80,6 +80,12 @@ kotlin {
             implementation(libs.kable)
 
         }
+
+        val commonTest by getting {
+            dependencies {
+                implementation(libs.kotlin.test)
+            }
+        }
     }
 }
 

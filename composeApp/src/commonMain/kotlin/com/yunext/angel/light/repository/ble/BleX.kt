@@ -6,6 +6,7 @@ import com.juul.kable.Filter
 import com.juul.kable.Peripheral
 import com.juul.kable.Scanner
 import com.juul.kable.State
+import com.juul.kable.WriteType
 import com.juul.kable.characteristicOf
 import com.juul.kable.logs.Hex
 import com.juul.kable.logs.Logging
@@ -26,7 +27,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
 
-expect suspend fun Peripheral.requestMtuIfNeed(mtu: Int)
+expect suspend fun Peripheral.requestMtuIfNeed(mtu: Int): Boolean
 
 object BleX {
 
@@ -365,17 +366,26 @@ object BleX {
                                     ">>>打开Notify..."
                                 }
                                 notify()
+
+                                val maximumWriteValueLengthForType =
+                                    peripheral.maximumWriteValueLengthForType(WriteType.WithoutResponse)
                                 d {
-                                    ">>>requestMtuIfNeed..."
+                                    ">>>maximumWriteValueLengthForType:$maximumWriteValueLengthForType"
                                 }
-                                peripheral.requestMtuIfNeed(Protocol.MTU)
-                                d {
-                                    ">>>requestMtuIfNeed!"
+                                if (maximumWriteValueLengthForType < Protocol.MTU) {
+                                    d {
+                                        ">>>requestMtuIfNeed..."
+                                    }
+                                    val requestMtu = peripheral.requestMtuIfNeed(Protocol.MTU)
+                                    d {
+                                        ">>>requestMtuIfNeed! $requestMtu"
+                                    }
                                 }
+
                                 delay(1000)
                                 val deviceName = todo.name
                                 d("deviceName:$deviceName")
-                                val authData = upAuthBlock(peripheral.name ?: "")
+                                val authData = upAuthBlock(deviceName ?: "")
                                 if (authData != null) {
                                     d {
                                         ">>>开始鉴权..."

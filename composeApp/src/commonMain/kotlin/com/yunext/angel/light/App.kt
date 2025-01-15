@@ -23,12 +23,18 @@ import com.yunext.angel.light.ui.screen.SplashScreen
 import com.yunext.angel.light.ui.viewmodel.AppState
 import com.yunext.angel.light.ui.viewmodel.AppViewModel
 import com.yunext.kotlin.kmp.common.domain.Effect
+import io.github.aakira.napier.Napier
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 
 @Composable
 @Preview
 fun App() {
+    LaunchedEffect(Unit){
+        Napier.d {
+            "Compose App"
+        }
+    }
     MaterialTheme {
         // for coil3
         // https://coil-kt.github.io/coil/getting_started/

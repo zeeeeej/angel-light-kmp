@@ -49,6 +49,7 @@ expect val platformUserStoreModule: Module
 
 object KoinInit {
     fun init(appDeclaration: KoinAppDeclaration): Koin {
+        println("KoinInit init")
         Napier.base(DebugAntilog())
         return startKoin {
             appDeclaration()

@@ -360,7 +360,7 @@ class ProductionViewModel(
                             // ...
                             val properties = bleEvent.properties
                             val result = properties[SetDeviceInfoKey.Set21]
-                            Napier.d(tag = "blex") { "result:$result" }
+                            Napier.d(tag = "blex") { "SetDeviceResult result:$result" }
                             if (result == true) {
                                 resetChannel?.trySend(ActionResult.Success(true))
                             }

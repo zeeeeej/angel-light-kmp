@@ -1,0 +1,38 @@
+import UIKit
+import SwiftUI
+import ComposeApp
+
+struct ComposeView: UIViewControllerRepresentable {
+    func makeUIViewController(context: Context) -> UIViewController {
+        MainViewControllerKt.MainViewController()
+    }
+
+    func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}
+    
+    
+}
+
+struct ContentView: View {
+
+
+        var body: some View {
+            VStack {
+                // 你的视图内容
+                Text("右滑返回")
+                ComposeView()
+            }
+            .gesture(
+                           DragGesture()
+                               .onEnded { value in
+                                   if value.translation.width > 100 {
+                                       // 这里可以添加返回逻辑，例如导航返回上一页
+                                       // 如果是在导航视图中，可以使用presentationMode.wrappedValue.dismiss()
+                                       print("已触发右滑返回")
+                                   }
+                               }
+                       )
+        }
+
+      }
+
+
