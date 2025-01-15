@@ -17,9 +17,9 @@
 	<key>CFBundlePackageType</key>
 	<string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0</string>
+	<string>2.0</string>
 	<key>CFBundleVersion</key>
-	<string>1</string>
+	<string>16</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
@@ -54,5 +54,15 @@
     <string>我们需要使用蓝牙来连接设备。</string>
     <key>NSBluetoothPeripheralUsageDescription</key>
     <string>我们需要使用蓝牙来读写设备。</string>
+
+    <key>HOST_HD_DEV</key>
+    <string>https://angel-bt-test.yunext.com/</string>
+
+     <key>HOST_ANGEL_DEV</key>
+        <string>https://blesmarttest.angelgroup.com.cn/</string>
+
+         <key>HOST_ANGEL</key>
+                <string>https://blesmart.angelgroup.com.cn/</string>
+
 </dict>
 </plist>

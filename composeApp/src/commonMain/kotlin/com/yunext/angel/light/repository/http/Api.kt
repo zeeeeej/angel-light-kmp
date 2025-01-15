@@ -55,7 +55,7 @@ interface ApiService {
 class Api {
 
     companion object {
-        private const val HOST = BuildConfigX.HOST
+        private  val HOST = BuildConfigX.HOST
         fun img(id: String) = "$HOST$IMG_PATH$id"
         val apiService by lazy {
             //KtorClient.httpClient(HOST).create<ApiService>()

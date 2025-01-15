@@ -97,8 +97,8 @@ android {
         applicationId = "com.yunext.angel.light"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 17
+        versionName = "2.0.16"
     }
     packaging {
         resources {
@@ -114,7 +114,48 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+    setFlavorDimensions(listOf("server"))
+
+    productFlavors {
+
+        create("lightHDDev") {
+            dimension = "server"
+            applicationIdSuffix = ".dev"
+            versionNameSuffix = "-dev"
+
+            buildConfigField("String", "HOST", "\"https://angel-bt-test.yunext.com/\"")
+        }
+
+        create("lightAngelDev") {
+            dimension = "server"
+            applicationIdSuffix = ".alpha"
+            versionNameSuffix = "-alpha"
+            buildConfigField("String", "HOST", "\"https://blesmarttest.angelgroup.com.cn/\"")
+        }
+
+        create("lightAngelRelease") {
+            dimension = "server"
+            applicationIdSuffix = ""
+            versionNameSuffix = ""
+            buildConfigField("String", "HOST", "\"https://blesmart.angelgroup.com.cn/\"")
+        }
+    }
+
+    applicationVariants.all {
+        outputs.forEach { output ->
+            val versionName = versionName
+            val versionCode = versionCode
+            val buildType = buildType.name
+            val flavorName = flavorName
+
+            // 自定义 APK 名称
+            val apkName = "AngelLightKMP_${flavorName}_${buildType}_v${versionName}_${versionCode}.apk"
+            (output as com.android.build.gradle.internal.api.BaseVariantOutputImpl).outputFileName = apkName
+        }
+    }
 }
+
+android.buildFeatures.buildConfig = true
 
 dependencies {
     debugImplementation(compose.uiTooling)

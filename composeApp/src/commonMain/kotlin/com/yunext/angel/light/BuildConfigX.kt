@@ -1,12 +1,32 @@
 package com.yunext.angel.light
 
 object BuildConfigX {
+    private val config = KBuildConfig()
     const val DEBUG_X = true
     const val V2 = true
-    const val VERSION = "2.0.1 alpha"
+
+
     /* 是否忽略服务器check */
     var IGNORE_CHECK_CODE = false
-    const val VERSION_CODE = 10
+    val VERSION_CODE = config.VERSION_CODE
 
-    const val HOST = "https://angel-bt-test.yunext.com/"
+     val VERSION = "${config.VERSION_NAME}(${config.VERSION_CODE})"
+
+    val HOST = config.HOST
+}
+
+/**
+ * 打包需要改的内容
+ *
+ * VERSION_NAME ： 2.0.16
+ * VERSION_CODE ： 17
+ * HOST         ：
+ *
+ * android 修改：build.gradle.kts
+ * ios 修改： Info.plist
+ */
+expect class KBuildConfig() {
+    val VERSION_NAME: String
+    val VERSION_CODE: Int
+    val HOST: String
 }
