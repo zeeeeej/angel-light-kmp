@@ -1,0 +1,24 @@
+{
+  "user": {
+    "username": "张产测",
+    "account": "zhangcc",
+    "root": "false",
+    "company": "海大工厂",
+    "userType": "ANDROID",
+    "token": "BB18013707E04D43AD58734C2C472C9AEKH0FKYHC0J9FX51"
+  },
+  "rawDeviceInfo": "[{\"key\":\"IsOpen\",\"value\":\"开机\",\"unit\":\"\",\"name\":\"开关机状态\"},{\"key\":\"ActionState\",\"value\":\"制水\",\"unit\":\"\",\"name\":\"制水/满水（待机）\"},{\"key\":\"WashState\",\"value\":\"冲洗中\",\"unit\":\"\",\"name\":\"冲洗\"},{\"key\":\"AdminLock\",\"value\":\"状态A\",\"unit\":\"\",\"name\":\"锁机状态\"}]",
+  "openResult": 1,
+  "washResult": 1,
+  "productResult": 1,
+  "bleLog": "",
+  "device": {
+    "peiJianCode": "792811",
+    "wuLiuCode": "10086",
+    "productCode": "022067520003",
+    "productName": "无界大通量系列",
+    "identifier": "022067520003",
+    "img": "67467d225b485b249b1f315f",
+    "modelName": "J3675-ROC210"
+  }
+}

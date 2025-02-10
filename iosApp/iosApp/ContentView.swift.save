@@ -1,0 +1,61 @@
+import UIKit
+import SwiftUI
+import ComposeApp
+
+struct ComposeView: UIViewControllerRepresentable {
+    @Environment(\.presentationMode) var presentationMode
+    
+    func makeUIViewController(context: Context) -> UIViewController {
+       let viewController = MainViewControllerKt.MainViewController()
+       print("======== iOS======makeUIViewController==========")
+       // 添加手势识别器到UIKit的ViewController
+       let gesture = UIScreenEdgePanGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.handleGesture(_:)))
+       gesture.edges = .left
+       viewController.view.addGestureRecognizer(gesture)
+       return viewController
+    }
+
+    func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}
+
+    // 创建一个协调器来处理手势
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
+
+    class Coordinator: NSObject {
+        var parent: ComposeView
+
+        init(_ parent: ComposeView) {
+            self.parent = parent
+        }
+
+        @objc func handleGesture(_ gesture: UIScreenEdgePanGestureRecognizer) {
+            // 当用户完成手势时，dismiss SwiftUI视图
+                print("======== iOS======返回==========")
+            if gesture.state == .ended {
+            print("======== iOS================dismiss")
+                parent.presentationMode.wrappedValue.dismiss()
+            }
+        }
+
+         // UIGestureRecognizerDelegate方法
+                func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+                    // 检查触摸是否在指定的阈值内
+                    let location = touch.location(in: gestureRecognizer.view)
+                    return location.x < translationThreshold
+                }
+    }
+    
+    
+}
+
+struct ContentView: View {
+    var body: some View {
+        ComposeView()
+//                 .ignoresSafeArea(.keyboard) // Compose has own keyboard handler
+                .edgesIgnoringSafeArea(.all) // 使视图全屏
+    }
+}
+
+
+

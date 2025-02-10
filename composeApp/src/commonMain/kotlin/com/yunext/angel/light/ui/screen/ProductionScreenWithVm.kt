@@ -39,6 +39,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import color
+import com.yunext.angel.light.common.clipBroad
 import com.yunext.angel.light.di.koinViewModelP2
 import com.yunext.angel.light.ui.compoent.CancelableLoadingComponent
 import com.yunext.angel.light.ui.compoent.HistoriesInfo
@@ -46,6 +47,7 @@ import com.yunext.angel.light.ui.compoent.LoadingComponent
 import com.yunext.angel.light.ui.compoent.PlatformBackGestureHandler
 import com.yunext.angel.light.ui.compoent.Toast
 import com.yunext.angel.light.ui.compoent.ToastData
+import com.yunext.angel.light.ui.compoent.display
 import com.yunext.angel.light.ui.viewmodel.ProductionState
 import com.yunext.angel.light.ui.viewmodel.ProductionViewModel
 import com.yunext.angel.light.ui.vo.Packet
@@ -118,12 +120,11 @@ fun ProductionScreenWithVm(
             }, onShare = {
                 if (it.isNotEmpty()) {
                     coroutineScope.launch {
-//                        clipBroad(
-//                            MyApp.CONTEXT,
-//                            "bleLog",
-//                            it.joinToString("\n") { h -> h.display })
-//                        ToastUtil.toast("已复制至剪贴板！")
-                        // TODO
+                        clipBroad(
+                            "bleLog",
+                            it.joinToString("\n") { h -> h.display })
+                        rememberModalBottomSheetState.hide()
+                        vm.toast("已复制至剪贴板！")
                     }
                 }
             }

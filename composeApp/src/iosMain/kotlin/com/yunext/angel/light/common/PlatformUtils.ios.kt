@@ -29,3 +29,8 @@ actual fun toggleFlashlight(on: Boolean) {
     }
 }
 
+actual suspend fun clipBroad(label: String, text: String) {
+    Napier.w {
+        "暂未实现"
+    }
+}
