@@ -288,7 +288,11 @@ fun ProductionScreenWithVm(
                                     modifier = Modifier
                                         .padding(10.dp)
                                         .clip(RoundedCornerShape(16.dp))
-                                        .shadow(8.dp)
+                                        .shadow(
+                                            8.dp,
+//                                            ambientColor = Color.Red,
+//                                            spotColor = Color.Green
+                                        )
                                         .background(Color.White)
                                         .padding(16.dp), contentAlignment = Alignment.Center
                                 ) {
@@ -296,9 +300,9 @@ fun ProductionScreenWithVm(
                                         text = it.msg,
                                         modifier = Modifier,
                                         style = TextStyle.Default.copy(
-                                            color = 中国色.大红.color,
+                                            color = Color.Black,//中国色.大红.color,
                                             fontSize = 18.sp,
-                                            fontWeight = FontWeight.Bold
+                                            fontWeight = FontWeight.ExtraBold
                                         )
                                     )
                                 }

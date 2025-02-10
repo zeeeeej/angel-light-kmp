@@ -90,6 +90,7 @@ kotlin {
 }
 
 android {
+    // light-v3.jks
     namespace = "com.yunext.angel.light"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
