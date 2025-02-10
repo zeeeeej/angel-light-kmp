@@ -461,7 +461,10 @@ val SetDeviceInfoKey.text: String
         SetDeviceInfoKey.Set17 -> "更换主板"
         SetDeviceInfoKey.Set21 -> "退出产测模式"
     }
+
+// todo 设置结果有多个 比如多个滤芯的设置 有2个Boolean
 typealias SetDeviceInfoNotifyMap = Map<SetDeviceInfoKey, Boolean>
+typealias SetDeviceInfoNotifyMutableMap = MutableMap<SetDeviceInfoKey, Boolean>
 
 val SetDeviceInfoNotifyMap.display2: String
     get() = "------\n<<设置设备信息结果>>\n${
@@ -472,67 +475,86 @@ val SetDeviceInfoNotifyMap.display2: String
 
 @OptIn(ExperimentalStdlibApi::class)
 fun parseSetDeviceInfo(payload: ByteArray): SetDeviceInfoNotifyMap {
-    // 5aa5 a4 0002 0200 a7
-    // 5aa5 a3 0003 020200 a9
-    // 5aa5 a4 0003 020200 aa
-    val map: MutableMap<SetDeviceInfoKey, Boolean> = mutableMapOf()
-    var cur = 0
-    while (cur < payload.size - 1) {
-        // 数据长度
-        val len = 2
-        // 数据
-        val data = payload.sliceArray(cur + 1..<cur + 1 + len)
-        // 添加到结果
-        d("[parseSetDeviceInfo]data:${data.display}")
-        if (data.isNotEmpty()) {
-            val k = data[0]
-            val v = data[1]
-            d("[parseSetDeviceInfo]       no:${k.toHexString()},v:${data[1].toHexString()}")
-            when (k) {
-                SetDeviceInfoKey.Set1.key -> {
-                    val value = v.toInt() == 0
-                    map[SetDeviceInfoKey.Set1] = value
-                }
+    try {
+        Napier.d {
+            "parseSetDeviceInfo ...."
+        }
+        // 5aa5 a4 0002 0200 a7
+        // 5aa5 a3 0003 020200 a9
+        // 5aa5 a4 0003 020200 aa
 
-                SetDeviceInfoKey.Set2.key -> {
-                    Napier.d { "[parseSetDeviceInfo] 解析到：${SetDeviceInfoKey.Set2.text}${data.toHexString()}" }
-                    val value = v.toInt() == 0
-                    map[SetDeviceInfoKey.Set2] = value
-                }
+        // 下发恢复出厂设置：
+        // 5aa5a3 0003 022100 c8
 
-                SetDeviceInfoKey.Set3.key -> {
-                    Napier.d { "[parseSetDeviceInfo] 解析到：${SetDeviceInfoKey.Set3.text}${data.toHexString()}" }
-                    val value = v.toInt() == 0
-                    map[SetDeviceInfoKey.Set3] = value
-                }
+        // 实际返回
+        // 5aa5a4 0002 2100 c6
 
-                SetDeviceInfoKey.Set4.key -> {
-                    val value = v.toInt() == 0
-                    map[SetDeviceInfoKey.Set4] = value
-                }
+        // 按照协议应为：
+        // 5aa5a4 0003 022100 c9
 
-                SetDeviceInfoKey.Set5.key -> {
-                    val value = v.toInt() == 0
-                    map[SetDeviceInfoKey.Set5] = value
-                }
+        val map: SetDeviceInfoNotifyMutableMap = mutableMapOf()
+        var cur = 0
+        val lengthSize = 0
+        while (cur < payload.size - 1) {
+            // 数据长度
+            val len = 2
+            // 数据
+            val data = payload.sliceArray(cur + lengthSize..<cur + lengthSize + len)
+            // 添加到结果
+            d("[parseSetDeviceInfo]data:${data.display}")
+            if (data.isNotEmpty()) {
+                val k = data[0]
+                val v = data[1]
+                d("[parseSetDeviceInfo]       no:${k.toHexString()},v:${data[1].toHexString()}")
+                when (k) {
+                    SetDeviceInfoKey.Set1.key -> {
+                        val value = v.toInt() == 0
+                        map[SetDeviceInfoKey.Set1] = value
+                    }
 
-                SetDeviceInfoKey.Set21.key -> {
-                    Napier.d { "[parseSetDeviceInfo] 解析到：${SetDeviceInfoKey.Set21.text}${data.toHexString()}" }
-                    val value = true//v.toInt() == 0
-                    map[SetDeviceInfoKey.Set21] = value
-                }
+                    SetDeviceInfoKey.Set2.key -> {
+                        Napier.d { "[parseSetDeviceInfo] 解析到：${SetDeviceInfoKey.Set2.text}${data.toHexString()}" }
+                        val value = v.toInt() == 0
+                        map[SetDeviceInfoKey.Set2] = value
+                    }
 
-                else -> {
-                    Napier.d { "[parseSetDeviceInfo] 解析到其他${data.toHexString()}" }
-                    throw RuntimeException("todo")
+                    SetDeviceInfoKey.Set3.key -> {
+                        Napier.d { "[parseSetDeviceInfo] 解析到：${SetDeviceInfoKey.Set3.text}${data.toHexString()}" }
+                        val value = v.toInt() == 0
+                        map[SetDeviceInfoKey.Set3] = value
+                    }
+
+                    SetDeviceInfoKey.Set4.key -> {
+                        val value = v.toInt() == 0
+                        map[SetDeviceInfoKey.Set4] = value
+                    }
+
+                    SetDeviceInfoKey.Set5.key -> {
+                        val value = v.toInt() == 0
+                        map[SetDeviceInfoKey.Set5] = value
+                    }
+
+                    SetDeviceInfoKey.Set21.key -> {
+                        Napier.d { "[parseSetDeviceInfo] 解析到：${SetDeviceInfoKey.Set21.text}${data.toHexString()}" }
+                        val value = true//v.toInt() == 0
+                        map[SetDeviceInfoKey.Set21] = value
+                    }
+
+                    else -> {
+                        Napier.w { "[parseSetDeviceInfo] 解析到其他${data.toHexString()}" }
+                    }
                 }
             }
+            // 更新位置
+            cur += len + lengthSize
         }
-        // 更新位置
-        cur += len + 1
+        return map
+    } catch (e: Throwable) {
+        Napier.w {
+            "parseSetDeviceInfo error:$e"
+        }
+        e.printStackTrace()
+        throw e
     }
-    return map
-
-
 }
 //</editor-fold>

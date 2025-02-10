@@ -74,8 +74,18 @@ object BleX {
     }
 
     fun reset() {
+
+        // 下发恢复出厂设置：
+        // 5aa5a3 0003 022100 c8
+
+        // 实际返回
+        // 5aa5a4 0002 2100 c6
+
+        // 按照协议应为：
+        // 5aa5a4 0003 022100 c9
+
         val value = byteArrayOf(0)
-        val no = byteArrayOf(0x21)
+        val no = byteArrayOf(SetDeviceInfoKey.Set21.key)
         val length = byteArrayOf((value + no).size.toByte())
         val payload = length + no + value
         val power = Protocol.rtcData(
@@ -333,7 +343,12 @@ object BleX {
                             .collect { down ->
                                 d("<<<down $serviceUUID/$notifyUUID ${down.toHexString()}")
                                 try {
-                                    downChannel.trySend((BleEvent.Down(down.display, currentTime())))
+                                    downChannel.trySend(
+                                        (BleEvent.Down(
+                                            down.display,
+                                            currentTime()
+                                        ))
+                                    )
                                     val bleEvent: BleEvent = parseDataV2(down = down)
                                     when (bleEvent) {
                                         is BleEvent.Authed -> {
@@ -523,10 +538,8 @@ object BleX {
 
             ProtocolCmd.DeviceInfoUpdateNotify.cmd -> {
                 val payload = protocolData.payload
-
                 val r = parseSetDeviceInfo(payload)
                 BleEvent.SetDeviceResult(r)
-
             }
 
             else -> {

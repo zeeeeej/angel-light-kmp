@@ -13,6 +13,7 @@ data class ProductResult(
     val productResult: Int,
     val bleLog: List<String>,
 //    val device:ScanResult
+    val phone:String
 )
 
 @Serializable

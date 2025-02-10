@@ -13,6 +13,7 @@ import com.yunext.angel.light.domain.poly.ProductResult
 import com.yunext.angel.light.domain.poly.ProductType
 import com.yunext.angel.light.domain.poly.ScanResult
 import com.yunext.angel.light.domain.poly.User
+import com.yunext.angel.light.getPlatform
 import com.yunext.angel.light.repository.AppRepo
 import com.yunext.angel.light.repository.ble.BleX
 import com.yunext.angel.light.repository.ble.SetDeviceInfoKey
@@ -785,6 +786,7 @@ class ProductionViewModel(
                 bleLog = if (debug.value) bleSimpleLogs.value else emptyList(),
                 rawDeviceInfo = (properties.value),
 //                device = scanResult
+                phone = "${getPlatform().name}"
             )
 
             val json = myJson.encodeToString(productResult)
