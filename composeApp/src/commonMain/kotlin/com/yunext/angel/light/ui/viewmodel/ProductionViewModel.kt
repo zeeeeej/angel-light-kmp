@@ -9,6 +9,7 @@ import com.yunext.angel.light.di.myJson
 import com.yunext.angel.light.domain.Empty
 import com.yunext.angel.light.domain.FinishReq
 import com.yunext.angel.light.domain.poly.Product
+import com.yunext.angel.light.domain.poly.ProductResult
 import com.yunext.angel.light.domain.poly.ProductType
 import com.yunext.angel.light.domain.poly.ScanResult
 import com.yunext.angel.light.domain.poly.User
@@ -16,9 +17,11 @@ import com.yunext.angel.light.repository.AppRepo
 import com.yunext.angel.light.repository.ble.BleX
 import com.yunext.angel.light.repository.ble.SetDeviceInfoKey
 import com.yunext.angel.light.repository.ble.TslPropertyKey
+import com.yunext.angel.light.repository.ble.datetimeFormat
 import com.yunext.angel.light.repository.ble.text
 import com.yunext.angel.light.repository.ble.unit
 import com.yunext.angel.light.repository.ble.value
+import com.yunext.angel.light.repository.json
 import com.yunext.angel.light.ui.screen.ProductModelVo
 import com.yunext.angel.light.ui.vo.ActionResult
 import com.yunext.angel.light.ui.vo.BleLog
@@ -73,7 +76,9 @@ data class ProductionState(
     val productionProductionResult: ProductionResult<String> = ProductionResult.Idle,
     @Deprecated("commitEffect", replaceWith = ReplaceWith("commitEffect"))
     val resetResult: ProductionResult<String> = ProductionResult.Idle,
-    val toast: String = ""
+    val toast: String = "",
+    val debug: Boolean = false,
+    val bleSimpleLogs: List<String> = emptyList()
 
 )
 
@@ -86,8 +91,10 @@ class ProductionViewModel(
     ViewModel() {
 
     private val user = appRepo.user.stateIn(viewModelScope, SharingStarted.Eagerly, User.Empty)
+    private val debug: MutableStateFlow<Boolean> = MutableStateFlow(false)
     private val commitEffect: MutableStateFlow<SimpleEffect> = MutableStateFlow(effectIdle())
     private val bleLogs: MutableStateFlow<List<BleLog>> = MutableStateFlow(emptyList())
+    private val bleSimpleLogs: MutableStateFlow<List<String>> = MutableStateFlow(emptyList())
     private val power: MutableStateFlow<Boolean> = MutableStateFlow(false)
     private val wash: MutableStateFlow<Boolean> = MutableStateFlow(false)
     private val properties: MutableStateFlow<List<PropertyVo>> = MutableStateFlow(emptyList())
@@ -127,7 +134,8 @@ class ProductionViewModel(
         powerProductionResult,
         productionProductionResult,
         resetResult,
-        toast
+        toast,
+        debug, bleSimpleLogs
     ) { changed ->
         ProductionState(
             product = pt.product,
@@ -149,7 +157,9 @@ class ProductionViewModel(
             powerProductionResult = changed[12] as ProductionResult<String>,
             productionProductionResult = changed[13] as ProductionResult<String>,
             resetResult = changed[14] as ProductionResult<String>,
-            toast = changed[15] as String
+            toast = changed[15] as String,
+            debug = changed[16] as Boolean,
+            bleSimpleLogs = changed[17] as List<String>,
         )
     }
 
@@ -174,7 +184,7 @@ class ProductionViewModel(
         autoConnect()
     }
 
-    private fun toast(msg: String = "") {
+     fun toast(msg: String = "") {
         toast.value = msg
     }
 
@@ -313,7 +323,7 @@ class ProductionViewModel(
                                         key = k,
                                         unit = k.unit,
                                         value = k.value(v) ?: "",
-                                        name = k.text
+                                        name = k.text,
                                     )
                                 }
                                 val newList = oldList.filter { t1 ->
@@ -365,6 +375,19 @@ class ProductionViewModel(
                                 resetChannel?.trySend(ActionResult.Success(true))
                             }
                         }
+
+                        is BleEvent.Status -> {
+                            bleSimpleLogs.value += "[状态]" + datetimeFormat { bleEvent.timestamp.toStr() } + " " + bleEvent.value
+                        }
+
+                        is BleEvent.Up -> {
+                            bleSimpleLogs.value += "[发送]" + datetimeFormat { bleEvent.timestamp.toStr() } + " " + bleEvent.value
+                        }
+
+                        is BleEvent.Down -> {
+                            bleSimpleLogs.value += "[接受]" + datetimeFormat { bleEvent.timestamp.toStr() } + " " + bleEvent.value
+                        }
+
 
                         else -> {}
                     }
@@ -714,22 +737,50 @@ class ProductionViewModel(
             check(scanResult != null) {
                 "scanResult is null"
             }
-            val map = mapOf(
-                "isOpen" to when (powerProductionResult.value) {
+//            val map = mapOf(
+//                "isOpen" to when (powerProductionResult.value) {
+//                    is ProductionResult.Fail -> 0
+//                    ProductionResult.Idle -> -1
+//                    is ProductionResult.Success -> 1
+//                }, "wash" to when (washProductionResult.value) {
+//                    is ProductionResult.Fail -> 0
+//                    ProductionResult.Idle -> -1
+//                    is ProductionResult.Success -> 1
+//                }, "chanCe" to when (val s = productionProductionResult.value) {
+//                    is ProductionResult.Fail -> 0
+//                    ProductionResult.Idle -> -1
+//                    is ProductionResult.Success -> 1
+//                }
+//            )
+
+            val productResult = ProductResult(
+//                user = user.value,
+                connected = connected.value,
+                productResult = when (productionProductionResult.value) {
                     is ProductionResult.Fail -> 0
                     ProductionResult.Idle -> -1
                     is ProductionResult.Success -> 1
-                }, "wash" to when (washProductionResult.value) {
+                },
+                washResult = when (washProductionResult.value) {
                     is ProductionResult.Fail -> 0
                     ProductionResult.Idle -> -1
                     is ProductionResult.Success -> 1
-                }, "chanCe" to when (val s = productionProductionResult.value) {
+                },
+                openResult = when (powerProductionResult.value) {
                     is ProductionResult.Fail -> 0
                     ProductionResult.Idle -> -1
                     is ProductionResult.Success -> 1
-                }
+                },
+//                bleLog = if (debug.value) bleLogs.value.map {
+//                    datetimeFormat { it.timestamp.toStr() + " " + it.log }
+//                } else emptyList(),
+
+                bleLog = if (true || debug.value) bleSimpleLogs.value else emptyList(),
+                rawDeviceInfo = (properties.value.map { it }.joinToString() { it.toString() }),
+//                device = scanResult
             )
-            val json = myJson.encodeToString(map)
+
+            val json = myJson.encodeToString(productResult)
             println("json = $json")
             return@withContext try {
                 val req = if (product.type == ProductType.PeiJian) {
@@ -786,6 +837,10 @@ class ProductionViewModel(
 
     fun connect() {
         autoConnect()
+    }
+
+    fun debug(on: Boolean) {
+        debug.value = on
     }
 
     companion object {

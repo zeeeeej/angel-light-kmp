@@ -478,11 +478,15 @@ import com.yunext.angel.light.repository.ble.toByteArray
 //}
 //
 sealed interface BleEvent {
-    data class Disconnect(val isActiveDisConnected: Boolean,val msg:String) : BleEvent {
+    data class Disconnect(val isActiveDisConnected: Boolean, val msg: String) : BleEvent {
         override fun toString(): String {
             return "已断开：$isActiveDisConnected"
         }
     }
+
+    data class Up(val value: String, val timestamp: Long) : BleEvent
+    data class Down(val value: String, val timestamp: Long) : BleEvent
+    data class Status(val value: String, val timestamp: Long) : BleEvent
 
     data object Connected : BleEvent {
         override fun toString(): String {
@@ -508,7 +512,7 @@ sealed interface BleEvent {
         }
     }
 
-    data class DeviceInfo(val properties: DeviceInfoSelectNotifyMap) : BleEvent {
+    data class DeviceInfo(val properties: DeviceInfoSelectNotifyMap, val raw: String) : BleEvent {
         override fun toString(): String {
             return "设备信息:$properties"
         }

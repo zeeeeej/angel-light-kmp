@@ -305,6 +305,9 @@ object BleX {
                 val writeBlock: suspend (ByteArray) -> Unit =
                     { up: ByteArray ->
                         d("写入${up.display}")
+
+                        downChannel.trySend((BleEvent.Up(up.display, currentTime())))
+
 //                        scope.launch {
                         peripheral.write(writeCH, up)
 //                        }
@@ -330,6 +333,7 @@ object BleX {
                             .collect { down ->
                                 d("<<<down $serviceUUID/$notifyUUID ${down.toHexString()}")
                                 try {
+                                    downChannel.trySend((BleEvent.Down(down.display, currentTime())))
                                     val bleEvent: BleEvent = parseDataV2(down = down)
                                     when (bleEvent) {
                                         is BleEvent.Authed -> {
@@ -360,6 +364,7 @@ object BleX {
                 launch {
                     peripheral.state.collect {
                         d("<<<当前状态：$it")
+                        downChannel.trySend((BleEvent.Status(it.toString(), currentTime())))
                         when (it) {
                             State.Connected -> {
                                 d {
@@ -507,7 +512,8 @@ object BleX {
                 // 5aa5a2008a19013131373338373632303937363535373932383131000000000502006400640503006400000504000000000505000000000306000005070000000002080105090000000105100000000005130000000005140000000005150000001905160000000408175357312e302e35051800003bd205190000000005200000453105210000095f052200000000cc
                 val payload = protocolData.payload
                 val map = parseDeviceInfo(payload)
-                BleEvent.DeviceInfo(map)
+                @OptIn(ExperimentalStdlibApi::class)
+                BleEvent.DeviceInfo(map, payload.toHexString())
             }
 
             ProtocolCmd.ProductionWriteNotify.cmd -> {

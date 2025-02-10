@@ -52,6 +52,7 @@ import com.yunext.angel.light.ui.vo.Packet
 import com.yunext.angel.light.ui.vo.ScanResultVo
 import com.yunext.kotlin.kmp.common.domain.Effect
 import com.yunext.kotlin.kmp.common.domain.doing
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
@@ -81,9 +82,9 @@ fun ProductionScreenWithVm(
 //                LaunchedEffect(Unit) {
 //                    bottomSheetScaffoldState.bottomSheetState.expand()
 //                }
-    var loggerSupport: Boolean by remember {
-        mutableStateOf(false)
-    }
+//    var loggerSupport: Boolean by remember {
+//        mutableStateOf(false)
+//    }
 
     val toast by remember(
         state.toast
@@ -140,6 +141,8 @@ fun ProductionScreenWithVm(
 
                     LaunchedEffect(state.commitEffect) {
                         if (state.commitEffect is Effect.Success<*, *>) {
+                            vm.toast("产测成功！")
+                            delay(1000)
                             toScan(packet)
                         }
                     }
@@ -166,7 +169,7 @@ fun ProductionScreenWithVm(
                         }, onConnect = {
                             vm.connect()
                         }, onDebug = {
-                            loggerSupport = !loggerSupport
+                            vm.debug(!state.debug)
                         })
 
                     val loadingConnect: Boolean by remember(state.connectEffect) {
@@ -258,7 +261,7 @@ fun ProductionScreenWithVm(
                         }
                     }
                     AnimatedVisibility(
-                        show && loggerSupport, modifier = Modifier
+                        show && state.debug, modifier = Modifier
                             .align(Alignment.BottomEnd)
                             .padding(vertical = 64.dp, horizontal = 32.dp)
                     ) {

@@ -22,24 +22,24 @@ import org.koin.dsl.module
 val appModule = module {
     single<UserDatasource> { UserDatasourceImpl(get()) } //bind UserDatasource::class
     single<HttpDatasource> { HttpDatasourceImpl() } //bind UserDatasource::class
-    single<AppRepo> { AppRepo(get(),get()) }
+    single<AppRepo> { AppRepo(get(), get()) }
 
     factory { params ->
         LoginViewModel(get())
     }
 
     factory { params ->
-        HomeRootViewModel(get(),params.get())
+        HomeRootViewModel(get(), params.get())
     }
 
     factory { params ->
-        MainViewModel(get(),params.get())
+        MainViewModel(get(), params.get())
     }
     factory { params ->
-        ScanViewModel(get(),params.get())
+        ScanViewModel(get(), params.get())
     }
     factory { params ->
-        ProductionViewModel(get(),params.get(),params.get())
+        ProductionViewModel(get(), params.get(), params.get())
     }
 }
 
@@ -60,4 +60,7 @@ object KoinInit {
     }
 }
 
-val myJson = Json { ignoreUnknownKeys = true }
+val myJson = Json {
+    ignoreUnknownKeys = true
+    prettyPrint = true
+}

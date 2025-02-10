@@ -1,21 +1,20 @@
 package com.yunext.angel.light.ui.screen
 
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -25,6 +24,7 @@ import com.yunext.angel.light.domain.poly.User
 import com.yunext.angel.light.repository.ble.currentTime
 import com.yunext.angel.light.ui.AppScreen
 import com.yunext.angel.light.ui.RouteOwner
+import com.yunext.angel.light.ui.compoent.PlatformBackGestureHandler
 import com.yunext.angel.light.ui.navArgument
 import com.yunext.angel.light.ui.route
 import com.yunext.angel.light.ui.tryGetPacketSimple
@@ -54,7 +54,23 @@ fun RootScreen(
     val state by vm.state.collectAsStateWithLifecycle(RootState(user = user))
     val coroutineScope = rememberCoroutineScope()
 
-
+    val lifecycleOwner = LocalLifecycleOwner.current
+    // 监听生命周期事件，以便在适当的时机注册和注销返回键处理
+    val backPressedObserver = remember {
+        LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_START) {
+//                backPressedDispatcher.registerBackPressHandler()
+            } else if (event == Lifecycle.Event.ON_STOP) {
+//                backPressedDispatcher.unregisterBackPressHandler()
+            }
+        }
+    }
+    DisposableEffect(lifecycleOwner){
+        lifecycleOwner.lifecycle.addObserver(backPressedObserver)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(backPressedObserver)
+        }
+    }
 
     NavHost(
         modifier = modifier,
@@ -103,6 +119,7 @@ fun RootScreen(
             check(packet != null) {
                 "packet is null"
             }
+
             ScanScreen(
                 Modifier
                     .fillMaxSize(),
