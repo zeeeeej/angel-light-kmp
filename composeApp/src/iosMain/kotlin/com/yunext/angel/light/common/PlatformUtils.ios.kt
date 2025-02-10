@@ -8,6 +8,8 @@ import platform.AVFoundation.AVCaptureTorchModeOn
 import platform.AVFoundation.AVMediaTypeVideo
 import platform.AVFoundation.hasTorch
 import platform.AVFoundation.torchMode
+import platform.UIKit.UIPasteboard
+import platform.UIKit.UIPasteboard.Companion.generalPasteboard
 
 @OptIn(ExperimentalForeignApi::class)
 actual fun toggleFlashlight(on: Boolean) {
@@ -30,7 +32,6 @@ actual fun toggleFlashlight(on: Boolean) {
 }
 
 actual suspend fun clipBroad(label: String, text: String) {
-    Napier.w {
-        "暂未实现"
-    }
+    val pasteboard: UIPasteboard = generalPasteboard
+    pasteboard.setValue(text, forPasteboardType = "public.utf8-plain-text")
 }
