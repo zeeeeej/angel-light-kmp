@@ -449,14 +449,16 @@ val SetDeviceInfoNotifyMap.display2: String
 
 @OptIn(ExperimentalStdlibApi::class)
 fun parseSetDeviceInfo(payload: ByteArray): SetDeviceInfoNotifyMap {
-    // 5aa5a4 0002 0200 a7
+    // 5aa5 a4 0002 0200 a7
+    // 5aa5 a3 0003 020200 a9
+    // 5aa5 a4 0003 020200 aa
     val map: MutableMap<SetDeviceInfoKey, Boolean> = mutableMapOf()
     var cur = 0
     while (cur < payload.size - 1) {
         // 数据长度
         val len = 2
         // 数据
-        val data = payload.sliceArray(cur..<cur + len)
+        val data = payload.sliceArray(cur+1..<cur+1 + len)
         // 添加到结果
         d("[parseSetDeviceInfo]data:${data.display}")
         if (data.isNotEmpty()) {
@@ -504,7 +506,7 @@ fun parseSetDeviceInfo(payload: ByteArray): SetDeviceInfoNotifyMap {
             }
         }
         // 更新位置
-        cur += data.size
+        cur += len+1
     }
     return map
 
