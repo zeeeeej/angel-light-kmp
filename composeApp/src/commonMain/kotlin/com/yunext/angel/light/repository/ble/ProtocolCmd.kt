@@ -59,11 +59,14 @@ val DeviceInfoSelectNotify.no: Byte
         DeviceInfoSelectNotify.D22 -> 0x22
     }
 
-typealias DeviceInfoSelectNotifyMap = Map<TslPropertyKey, Any?>
+typealias DeviceInfoSelectNotifyMap = Map<TslPropertyKey, TslPropertyValue>
+typealias DeviceInfoSelectNotifyMutableMap = MutableMap<TslPropertyKey, TslPropertyValue>
+
+typealias TslPropertyValue = Pair<Any?, ByteArray>
 
 @OptIn(ExperimentalStdlibApi::class)
 fun parseDeviceInfo(payload: ByteArray): DeviceInfoSelectNotifyMap {
-    val map: MutableMap<TslPropertyKey, Any?> = mutableMapOf()
+    val map: DeviceInfoSelectNotifyMutableMap = mutableMapOf()
     var cur = 0
     while (cur < payload.size - 1) {
         // 数据长度
@@ -78,17 +81,21 @@ fun parseDeviceInfo(payload: ByteArray): DeviceInfoSelectNotifyMap {
             d("[parseDeviceInfo]       no:${no.toHexString()},value:${value.toHexString()}")
             when (no) {
                 DeviceInfoSelectNotify.D01.no -> {
-                    map[TslPropertyKey.BarcodeId] = value.dropLastWhile { // 去除结尾的0
+                    val rawValue = value.dropLastWhile { // 去除结尾的0
                         it == 0.toByte()
-                    }.toByteArray().decodeToString()
+                    }.toByteArray()
+                    map[TslPropertyKey.BarcodeId] =
+                        rawValue.decodeToString() to rawValue
                 }
 
                 DeviceInfoSelectNotify.D02.no -> {
                     try {
-                        val filter01 = byteArrayOf(value[2], value[3]).toInt()
-                        val filter02 = byteArrayOf(value[0], value[1]).toInt()
-                        map[TslPropertyKey.FilterLife1] = filter01
-                        map[TslPropertyKey.FilterLife2] = filter02
+                        val filter01 = byteArrayOf(value[2], value[3])
+                        val filter02 = byteArrayOf(value[0], value[1])
+                        map[TslPropertyKey.FilterLife1] =
+                            filter01.toInt() to filter01
+                        map[TslPropertyKey.FilterLife2] =
+                            filter02.toInt() to filter02
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
@@ -98,8 +105,10 @@ fun parseDeviceInfo(payload: ByteArray): DeviceInfoSelectNotifyMap {
                     try {
                         val filter03 = byteArrayOf(value[2], value[3]).toInt()
                         val filter04 = byteArrayOf(value[0], value[1]).toInt()
-                        map[TslPropertyKey.FilterLife3] = filter03
-                        map[TslPropertyKey.FilterLife4] = filter04
+                        map[TslPropertyKey.FilterLife3] =
+                            filter03 to byteArrayOf(value[2], value[3])
+                        map[TslPropertyKey.FilterLife4] =
+                            filter04 to byteArrayOf(value[0], value[1])
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
@@ -107,10 +116,14 @@ fun parseDeviceInfo(payload: ByteArray): DeviceInfoSelectNotifyMap {
 
                 DeviceInfoSelectNotify.D04.no -> {
                     try {
-                        val filter05 = byteArrayOf(value[2], value[3]).toInt()
-                        val filter06 = byteArrayOf(value[0], value[1]).toInt()
-                        map[TslPropertyKey.FilterLife5] = filter05
-                        map[TslPropertyKey.FilterLife6] = filter06
+                        val filter05RawValue = byteArrayOf(value[2], value[3])
+                        val filter06RawValue = byteArrayOf(value[0], value[1])
+                        val filter05 = filter05RawValue.toInt()
+                        val filter06 = filter06RawValue.toInt()
+                        map[TslPropertyKey.FilterLife5] =
+                            filter05 to filter05RawValue
+                        map[TslPropertyKey.FilterLife6] =
+                            filter06 to filter06RawValue
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
@@ -118,10 +131,14 @@ fun parseDeviceInfo(payload: ByteArray): DeviceInfoSelectNotifyMap {
 
                 DeviceInfoSelectNotify.D05.no -> {
                     try {
-                        val filter07 = byteArrayOf(value[2], value[3]).toInt()
-                        val filter08 = byteArrayOf(value[0], value[1]).toInt()
-                        map[TslPropertyKey.FilterLife7] = filter07
-                        map[TslPropertyKey.FilterLife8] = filter08
+                        val filter07RawValue = byteArrayOf(value[2], value[3])
+                        val filter08RawValue = byteArrayOf(value[0], value[1])
+                        val filter07 = filter07RawValue.toInt()
+                        val filter08 = filter08RawValue.toInt()
+                        map[TslPropertyKey.FilterLife7] =
+                            filter07 to filter07RawValue
+                        map[TslPropertyKey.FilterLife8] =
+                            filter08 to filter08RawValue
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
@@ -135,10 +152,11 @@ fun parseDeviceInfo(payload: ByteArray): DeviceInfoSelectNotifyMap {
                         val washState = value[1].bitCheck1(2)
                         val adminLock = value[1].bitCheck1(3)
                         // ...
-                        map[TslPropertyKey.IsOpen] = isOpen
-                        map[TslPropertyKey.ActionState] = actionState
-                        map[TslPropertyKey.WashState] = washState
-                        map[TslPropertyKey.AdminLock] = adminLock
+                        val rawValue = byteArrayOf(value[1])
+                        map[TslPropertyKey.IsOpen] = isOpen to rawValue
+                        map[TslPropertyKey.ActionState] = actionState to rawValue
+                        map[TslPropertyKey.WashState] = washState to rawValue
+                        map[TslPropertyKey.AdminLock] = adminLock to rawValue
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
@@ -180,7 +198,8 @@ fun parseDeviceInfo(payload: ByteArray): DeviceInfoSelectNotifyMap {
                             if (value[0].bitCheck1(6)) Error.E31 else null,
                             //...
                         )
-                        map[TslPropertyKey.IsDeal] = list
+                        map[TslPropertyKey.IsDeal] =
+                            list to value
 
                     } catch (e: Exception) {
                         e.printStackTrace()
@@ -189,7 +208,7 @@ fun parseDeviceInfo(payload: ByteArray): DeviceInfoSelectNotifyMap {
 
                 DeviceInfoSelectNotify.D08.no -> {
                     try {
-                        map[TslPropertyKey.AiFlushMode] = value.toInt() == 1
+                        map[TslPropertyKey.AiFlushMode] = (value.toInt() == 1) to value
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
@@ -197,10 +216,12 @@ fun parseDeviceInfo(payload: ByteArray): DeviceInfoSelectNotifyMap {
 
                 DeviceInfoSelectNotify.D09.no -> {
                     try {
-                        val high = byteArrayOf(value[2], value[3]).toInt()
-                        val lower = byteArrayOf(value[0], value[1]).toInt()
-                        map[TslPropertyKey.InTds] = high
-                        map[TslPropertyKey.OutTds] = lower
+                        val highRawValue = byteArrayOf(value[2], value[3])
+                        val lowerRawValue = byteArrayOf(value[0], value[1])
+                        val high = highRawValue.toInt()
+                        val lower = lowerRawValue.toInt()
+                        map[TslPropertyKey.InTds] = high to highRawValue
+                        map[TslPropertyKey.OutTds] = lower to lowerRawValue
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
@@ -208,10 +229,12 @@ fun parseDeviceInfo(payload: ByteArray): DeviceInfoSelectNotifyMap {
 
                 DeviceInfoSelectNotify.D10.no -> {
                     try {
-                        val high = byteArrayOf(value[2], value[3]).toInt()
-                        val lower = byteArrayOf(value[0], value[1]).toInt()
-                        map[TslPropertyKey.InTemperature] = high
-                        map[TslPropertyKey.OutTemperature] = lower
+                        val highRawValue = byteArrayOf(value[2], value[3])
+                        val lowerRawValue = byteArrayOf(value[0], value[1])
+                        val high = highRawValue.toInt()
+                        val lower = lowerRawValue.toInt()
+                        map[TslPropertyKey.InTemperature] = high to highRawValue
+                        map[TslPropertyKey.OutTemperature] = lower to lowerRawValue
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
@@ -219,7 +242,7 @@ fun parseDeviceInfo(payload: ByteArray): DeviceInfoSelectNotifyMap {
 
                 DeviceInfoSelectNotify.D13.no -> {
                     try {
-                        map[TslPropertyKey.TotalUsedPureWater] = value.toInt()
+                        map[TslPropertyKey.TotalUsedPureWater] = value.toInt() to value
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
@@ -227,7 +250,7 @@ fun parseDeviceInfo(payload: ByteArray): DeviceInfoSelectNotifyMap {
 
                 DeviceInfoSelectNotify.D14.no -> {
                     try {
-                        map[TslPropertyKey.TotalUsedWater] = value.toInt()
+                        map[TslPropertyKey.TotalUsedWater] = value.toInt() to value
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
@@ -235,7 +258,7 @@ fun parseDeviceInfo(payload: ByteArray): DeviceInfoSelectNotifyMap {
 
                 DeviceInfoSelectNotify.D15.no -> {
                     try {
-                        map[TslPropertyKey.PeriodicRhythm] = value.toInt()
+                        map[TslPropertyKey.PeriodicRhythm] = value.toInt() to value
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
@@ -243,7 +266,7 @@ fun parseDeviceInfo(payload: ByteArray): DeviceInfoSelectNotifyMap {
 
                 DeviceInfoSelectNotify.D16.no -> {
                     try {
-                        map[TslPropertyKey.ResetTimes] = value.toInt()
+                        map[TslPropertyKey.ResetTimes] = value.toInt() to value
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
@@ -251,7 +274,7 @@ fun parseDeviceInfo(payload: ByteArray): DeviceInfoSelectNotifyMap {
 
                 DeviceInfoSelectNotify.D17.no -> {
                     try {
-                        map[TslPropertyKey.FirmwareVersion] = value.decodeToString()
+                        map[TslPropertyKey.FirmwareVersion] = value.decodeToString() to value
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
@@ -259,7 +282,7 @@ fun parseDeviceInfo(payload: ByteArray): DeviceInfoSelectNotifyMap {
 
                 DeviceInfoSelectNotify.D18.no -> {
                     try {
-                        map[TslPropertyKey.PowerOnTime] = value.toInt()
+                        map[TslPropertyKey.PowerOnTime] = value.toInt() to value
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
@@ -267,7 +290,7 @@ fun parseDeviceInfo(payload: ByteArray): DeviceInfoSelectNotifyMap {
 
                 DeviceInfoSelectNotify.D19.no -> {
                     try {
-                        map[TslPropertyKey.OutageNum] = value.toInt()
+                        map[TslPropertyKey.OutageNum] = value.toInt() to value
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
@@ -275,7 +298,7 @@ fun parseDeviceInfo(payload: ByteArray): DeviceInfoSelectNotifyMap {
 
                 DeviceInfoSelectNotify.D20.no -> {
                     try {
-                        map[TslPropertyKey.CurrDeviceTime] = value.toInt()
+                        map[TslPropertyKey.CurrDeviceTime] = value.toInt() to value
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
@@ -283,7 +306,7 @@ fun parseDeviceInfo(payload: ByteArray): DeviceInfoSelectNotifyMap {
 
                 DeviceInfoSelectNotify.D21.no -> {
                     try {
-                        map[TslPropertyKey.LastOutageTime] = value.toInt()
+                        map[TslPropertyKey.LastOutageTime] = value.toInt() to value
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
@@ -316,7 +339,7 @@ fun parseDeviceInfo(payload: ByteArray): DeviceInfoSelectNotifyMap {
                             if (value[1].bitCheck1(5)) Protection.S22 else null,
                             //...
                         )
-                        map[TslPropertyKey.WarnState] = list
+                        map[TslPropertyKey.WarnState] = list to value
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
@@ -458,7 +481,7 @@ fun parseSetDeviceInfo(payload: ByteArray): SetDeviceInfoNotifyMap {
         // 数据长度
         val len = 2
         // 数据
-        val data = payload.sliceArray(cur+1..<cur+1 + len)
+        val data = payload.sliceArray(cur + 1..<cur + 1 + len)
         // 添加到结果
         d("[parseSetDeviceInfo]data:${data.display}")
         if (data.isNotEmpty()) {
@@ -472,13 +495,13 @@ fun parseSetDeviceInfo(payload: ByteArray): SetDeviceInfoNotifyMap {
                 }
 
                 SetDeviceInfoKey.Set2.key -> {
-                    Napier.d { "[parseSetDeviceInfo] 解析到：${ SetDeviceInfoKey.Set2.text}${data.toHexString()}" }
+                    Napier.d { "[parseSetDeviceInfo] 解析到：${SetDeviceInfoKey.Set2.text}${data.toHexString()}" }
                     val value = v.toInt() == 0
                     map[SetDeviceInfoKey.Set2] = value
                 }
 
                 SetDeviceInfoKey.Set3.key -> {
-                    Napier.d { "[parseSetDeviceInfo] 解析到：${ SetDeviceInfoKey.Set3.text}${data.toHexString()}" }
+                    Napier.d { "[parseSetDeviceInfo] 解析到：${SetDeviceInfoKey.Set3.text}${data.toHexString()}" }
                     val value = v.toInt() == 0
                     map[SetDeviceInfoKey.Set3] = value
                 }
@@ -494,7 +517,7 @@ fun parseSetDeviceInfo(payload: ByteArray): SetDeviceInfoNotifyMap {
                 }
 
                 SetDeviceInfoKey.Set21.key -> {
-                    Napier.d { "[parseSetDeviceInfo] 解析到：${ SetDeviceInfoKey.Set21.text}${data.toHexString()}" }
+                    Napier.d { "[parseSetDeviceInfo] 解析到：${SetDeviceInfoKey.Set21.text}${data.toHexString()}" }
                     val value = true//v.toInt() == 0
                     map[SetDeviceInfoKey.Set21] = value
                 }
@@ -506,7 +529,7 @@ fun parseSetDeviceInfo(payload: ByteArray): SetDeviceInfoNotifyMap {
             }
         }
         // 更新位置
-        cur += len+1
+        cur += len + 1
     }
     return map
 

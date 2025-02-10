@@ -82,6 +82,7 @@ data class ProductionState(
 
 )
 
+@OptIn(ExperimentalStdlibApi::class)
 @Suppress("UNCHECKED_CAST")
 class ProductionViewModel(
     private val appRepo: AppRepo,
@@ -184,7 +185,7 @@ class ProductionViewModel(
         autoConnect()
     }
 
-     fun toast(msg: String = "") {
+    fun toast(msg: String = "") {
         toast.value = msg
     }
 
@@ -291,7 +292,8 @@ class ProductionViewModel(
                     addLog(bleEvent.toString())
                     when (bleEvent) {
                         is BleEvent.Authed -> {
-                            connected.value = true
+                            bleSimpleLogs.value += "[鉴权]成功：${bleEvent.success}"
+                            connected.value = bleEvent.success
                             connectEffect.value = effectSuccess()
                         }
 
@@ -304,26 +306,30 @@ class ProductionViewModel(
                             val map = bleEvent.properties
                             val isOpen = map[TslPropertyKey.IsOpen]
                             if (isOpen != null) {
-                                power.value = isOpen as Boolean
-                                powerChannel?.trySend(ActionResult.Success(isOpen as Boolean))
+                                val r = isOpen.first as Boolean
+                                power.value = r
+                                powerChannel?.trySend(ActionResult.Success(r))
 
 
                             }
                             val isWash = map[TslPropertyKey.WashState]
                             if (isWash != null) {
-                                wash.value = isWash as Boolean
-                                washChannel?.trySend(ActionResult.Success(isWash))
+                                val r = isWash.first as Boolean
+                                wash.value = r
+                                washChannel?.trySend(ActionResult.Success(r))
                             }
 
 
                             if (map.isNotEmpty()) {
                                 val oldList = properties.value
                                 val pList = map.map { (k, v) ->
+                                    val (showValue, rawValue) = v
                                     PropertyVo(
                                         key = k,
                                         unit = k.unit,
-                                        value = k.value(v) ?: "",
+                                        value = k.value(showValue) ?: "",
                                         name = k.text,
+                                        rawValue = rawValue.toHexString()
                                     )
                                 }
                                 val newList = oldList.filter { t1 ->
@@ -350,6 +356,7 @@ class ProductionViewModel(
                         }
 
                         is BleEvent.Error -> {
+                            bleSimpleLogs.value += "[错误]" + bleEvent.msg
                             connectEffect.value = effectFail(throwableOf { bleEvent.msg })
                             connected.value = false
                             clearJobs()
@@ -775,8 +782,8 @@ class ProductionViewModel(
 //                    datetimeFormat { it.timestamp.toStr() + " " + it.log }
 //                } else emptyList(),
 
-                bleLog = if (true || debug.value) bleSimpleLogs.value else emptyList(),
-                rawDeviceInfo = (properties.value.map { it }.joinToString() { it.toString() }),
+                bleLog = if (debug.value) bleSimpleLogs.value else emptyList(),
+                rawDeviceInfo = (properties.value),
 //                device = scanResult
             )
 
