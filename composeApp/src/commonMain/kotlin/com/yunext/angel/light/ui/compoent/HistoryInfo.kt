@@ -198,7 +198,7 @@ internal fun HistoriesInfo(
 
                 LazyColumn(Modifier.fillMaxSize(), state) {
 
-                    itemsIndexed(filterList, { _, it -> "${it.timestamp}${it.log}" }) { index, it ->
+                    itemsIndexed(filterList, { _, it -> "${it.timestamp}${it.log}${it.index}" }) { index, it ->
                         HistoryItem(
                             modifier = Modifier.background(ZhongGuoSe.乳白.color.copy(if (index % 2 == 0) 1f else .5f)),
                             history = it, suoxie = { suoxie }, onSuoXie = {

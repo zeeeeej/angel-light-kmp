@@ -2,7 +2,7 @@ package com.yunext.angel.light
 
 object BuildConfigX {
     private val config = KBuildConfig()
-    const val DEBUG_X = true
+    const val DEBUG_X = false
     const val V2 = true
 
 

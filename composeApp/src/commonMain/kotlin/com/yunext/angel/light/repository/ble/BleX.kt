@@ -4,6 +4,7 @@ import BleEvent
 import com.juul.kable.ExperimentalApi
 import com.juul.kable.Filter
 import com.juul.kable.Peripheral
+import com.juul.kable.PlatformScanner
 import com.juul.kable.Scanner
 import com.juul.kable.State
 import com.juul.kable.WriteType
@@ -20,6 +21,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
@@ -29,14 +31,16 @@ import kotlinx.coroutines.withTimeoutOrNull
 
 expect suspend fun Peripheral.requestMtuIfNeed(mtu: Int): Boolean
 
+expect fun createPlatformScanner():PlatformScanner
+
 object BleX {
 
     private const val TAG = "blex"
-    private const val DEBUG = false
+    private const val DEBUG = true
     val logChannel: Channel<BleLog> = Channel()
     val downChannel: Channel<BleEvent> = Channel()
     private val bleScope =
-        CoroutineScope(SupervisorJob() + Dispatchers.Main + CoroutineExceptionHandler { _, throwable ->
+        CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate + CoroutineExceptionHandler { _, throwable ->
             d {
                 "CoroutineExceptionHandler throwable:$throwable"
             }
@@ -228,10 +232,13 @@ object BleX {
     }
     private var _peripheral: Peripheral? = null
 
+    private var start = 0L
+
     @OptIn(ExperimentalStdlibApi::class, ExperimentalApi::class)
     fun start(peiJian: String) {
         val last = peiJian.takeLast(6)
         autoConnectJob?.cancel()
+        autoConnectJob = null
         autoConnectJob = bleScope.launch {
             launch {
                 val serviceUUID = Protocol.UUID_SERVICE
@@ -241,26 +248,35 @@ object BleX {
                 d { "serviceUUID    :   $serviceUUID" }
                 d { "notifyUUID     :   $notifyUUID" }
                 d { "writeUUID      :   $writeUUID" }
-                val scanner = Scanner {
-                    filters {
-                        match {
-                            name = if (DEBUG) {
-                                Filter.Name.Prefix(Protocol.PREFIX)
-                            } else {
-                                Filter.Name.Exact(Protocol.PREFIX + last)
-                            }
-
-
-                        }
-                    }
-                    logging {
-                        engine = SystemLogEngine
-                        level = Logging.Level.Warnings
-                        format = Logging.Format.Multiline
-                    }
+                start = currentTime()
+//                val scanner = Scanner {
+////                    filters {
+////                        match {
+////                            name = if (DEBUG) {
+////                                Filter.Name.Prefix(Protocol.PREFIX)
+////                            } else {
+////                                Filter.Name.Exact(Protocol.PREFIX + last)
+////                            }
+////
+////
+////                        }
+////                    }
+//                    logging {
+//                        engine = SystemLogEngine
+//                        level = Logging.Level.Warnings
+//                        format = Logging.Format.Multiline
+//                    }
+//
+//                }
+                val scanner = createPlatformScanner()
+                val dest = Protocol.PREFIX + last
+                val todo = scanner.advertisements.first() {
+//                    if (it.name?.isNotEmpty() == true) {
+//                        d { "<<<搜索到外设: [${it.name}] / [${it.peripheralName}] vs $last" }
+//                    }
+                    it.name == dest
                 }
-                val todo = scanner.advertisements.first()
-                d { "<<<搜索到外设: $todo" }
+                d { "<<<搜索到目标外设: $todo 耗时：${currentTime() - start}ms" }
                 val peripheral = Peripheral(todo) {
                     logging {
                         engine = SystemLogEngine
@@ -352,13 +368,19 @@ object BleX {
                                     val bleEvent: BleEvent = parseDataV2(down = down)
                                     when (bleEvent) {
                                         is BleEvent.Authed -> {
-                                            val syncDeviceInfo = upSyncDeviceInfo()
-                                            if (syncDeviceInfo != null) {
-                                                d(">>>开始同步设备信息")
-                                                writeBlock(syncDeviceInfo)
+                                            e(">>>鉴权完毕 result:${bleEvent.success}  耗时：${currentTime() - start}ms")
+                                            if (bleEvent.success) {
+                                                val syncDeviceInfo = upSyncDeviceInfo()
+                                                if (syncDeviceInfo != null) {
+                                                    d(">>>开始同步设备信息")
+                                                    writeBlock(syncDeviceInfo)
+                                                } else {
+                                                    w(">>>开始同步设备信息为空")
+                                                }
                                             } else {
-                                                w(">>>开始同步设备信息为空")
+                                                e(">>>鉴权失败")
                                             }
+
                                         }
 
                                         else -> {
@@ -402,7 +424,7 @@ object BleX {
                                     }
                                 }
 
-                                delay(1000)
+                                delay(100)
                                 val deviceName = todo.name
                                 d("deviceName:$deviceName")
                                 val authData = upAuthBlock(deviceName ?: "")
@@ -458,15 +480,18 @@ object BleX {
             }.also {
                 it.invokeOnCompletion {
                     d { "<<<<<<<<<<<<<<<<<*" }
-                    bleScope.launch(Dispatchers.Main + NonCancellable) {
-                        try {
-                            _peripheral?.disconnect()
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                        }
+//                    bleScope.launch(Dispatchers.Main.immediate + NonCancellable) {
+                    try {
+                        d { "cancel: $_peripheral" }
+//                            _peripheral?.disconnect()
+                        _peripheral?.cancel()
+                        _peripheral = null
+                    } catch (e: Exception) {
+                        e.printStackTrace()
                     }
-
                 }
+
+//                }
             }
         }
     }
@@ -551,6 +576,7 @@ object BleX {
     }
 
     fun stop() {
+        d("stop")
         autoConnectJob?.cancel()
         autoConnectJob = null
     }

@@ -18,7 +18,7 @@ import com.yunext.angel.light.resources.logo
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
-internal fun Logo(modifier: Modifier = Modifier, version: String = "v1.0.0 kmp" ) {
+internal fun Logo(modifier: Modifier = Modifier, version: String  ) {
     Column(modifier = modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
         Image(painterResource(Res.drawable.logo), null, modifier = Modifier)
         Spacer(Modifier.height(21.dp))

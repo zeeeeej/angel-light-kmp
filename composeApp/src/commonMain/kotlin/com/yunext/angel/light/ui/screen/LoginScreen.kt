@@ -54,7 +54,7 @@ fun LoginScreen(modifier: Modifier, onCommit: LoginScreenOnCommit) {
         Box(modifier) {
             Column {
                 Spacer(Modifier.height(47.dp))
-                Logo()
+                Logo(version = BuildConfigX.VERSION)
                 Spacer(Modifier.height(32.dp))
                 Inputs(onCommit = onCommit)
             }

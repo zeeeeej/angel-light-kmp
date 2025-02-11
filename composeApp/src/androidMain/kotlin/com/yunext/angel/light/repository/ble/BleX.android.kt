@@ -1,8 +1,11 @@
 package com.yunext.angel.light.repository.ble
 
+import android.bluetooth.le.ScanSettings
 import android.os.Build
 import com.juul.kable.AndroidPeripheral
 import com.juul.kable.Peripheral
+import com.juul.kable.PlatformScanner
+import com.juul.kable.Scanner
 import io.github.aakira.napier.Napier
 
 actual suspend fun Peripheral.requestMtuIfNeed(mtu: Int): Boolean {
@@ -19,5 +22,13 @@ actual suspend fun Peripheral.requestMtuIfNeed(mtu: Int): Boolean {
     } catch (e: Exception) {
         e.printStackTrace()
         false
+    }
+}
+
+actual fun createPlatformScanner():PlatformScanner{
+    return Scanner{
+        scanSettings = ScanSettings.Builder()
+            .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
+            .build()
     }
 }

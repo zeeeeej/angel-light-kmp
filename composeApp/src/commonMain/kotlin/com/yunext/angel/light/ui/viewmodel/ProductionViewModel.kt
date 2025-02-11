@@ -699,7 +699,7 @@ class ProductionViewModel(
 //                        resetEffect.value = Effect.Idle
 //                        resetResult.value = ProductionResult.Success("")
                         toast.value = ""
-
+                        BleX.stop()
                         commit()
 
                     } else {

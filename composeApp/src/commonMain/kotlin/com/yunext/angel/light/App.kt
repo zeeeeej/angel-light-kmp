@@ -11,6 +11,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import coil3.ImageLoader
 import coil3.compose.setSingletonImageLoaderFactory
 import coil3.request.crossfade
@@ -35,7 +36,9 @@ fun App() {
             "Compose App"
         }
     }
-    MaterialTheme {
+    MaterialTheme(
+        colors = MaterialTheme.colors.copy(primary = Color.Black)
+    ) {
         // for coil3
         // https://coil-kt.github.io/coil/getting_started/
         setSingletonImageLoaderFactory { ctx ->
